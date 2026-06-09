@@ -7,7 +7,7 @@
 
 ### Client PDF pack (`stabilization-pack/v0.1`)
 
-Source markdown lives in `docs/`; client-facing PDFs are built to [`deliverables/stabilization-pack/v0.1/`](https://github.com/timabiok/sika-ye-moja/tree/main/deliverables/stabilization-pack/v0.1).
+Source markdown on GitHub: [docs/](https://github.com/timabiok/sika-ye-moja/tree/main/docs). Client PDF pack: [stabilization-pack/v0.1](https://github.com/timabiok/sika-ye-moja/tree/main/deliverables/stabilization-pack/v0.1).
 
 ```bash
 ./scripts/build-deliverable-pdfs.sh          # build all PDFs
@@ -61,9 +61,9 @@ Full mapping: [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md#sow-contract-bas
 - [ ] Dev Linux deep-dive (SSH/Bastion) completed
 - [ ] [DEV-PODMAN-ASSESSMENT.md](DEV-PODMAN-ASSESSMENT.md) v0.1 filled (host, services, metrics)
 - [ ] Deploy path documented (runner vs runtime vs combined host today)
-- [x] Registry recommendation delivered — [REGISTRY-AND-SUPPLY-CHAIN.md](REGISTRY-AND-SUPPLY-CHAIN.md) (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/registry-supply-chain-advisory.pdf))
+- [x] Registry recommendation delivered — [REGISTRY-AND-SUPPLY-CHAIN.md](REGISTRY-AND-SUPPLY-CHAIN.md) (**Draft in repo**)
 - [x] Access model draft shared — [BANKING-PLATFORM-STANDARDS-v1.md](BANKING-PLATFORM-STANDARDS-v1.md) §1 + [NETWORK-IAM-STANDARDS.md](NETWORK-IAM-STANDARDS.md) (**Draft in repo**)
-- [x] Podman deploy **gap list** published — [PODMAN-DEPLOY-GAP-LIST.md](PODMAN-DEPLOY-GAP-LIST.md) (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/program/podman-gap-list.pdf))
+- [x] Podman deploy **gap list** published — [PODMAN-DEPLOY-GAP-LIST.md](PODMAN-DEPLOY-GAP-LIST.md) (**Draft in repo**)
 - [ ] [CLARIFICATIONS-WITH-DEV-TEAM.md](CLARIFICATIONS-WITH-DEV-TEAM.md) — open items closed or deferred
 
 ### Track B — Network discovery
@@ -81,27 +81,27 @@ Full mapping: [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md#sow-contract-bas
 
 ### Core SOW deliverables
 
-- [x] [STRATEGY-POST-RHEL.md](STRATEGY-POST-RHEL.md) — stabilization plan delivered (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/program/stabilization-strategy.pdf))
-- [ ] [STANDARDS-RHEL-PODMAN-v0.1.md](STANDARDS-RHEL-PODMAN-v0.1.md) — **client review** / v1.0 sign-off ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/rhel-podman-standards-v0.1.pdf))
-- [x] [BANKING-PLATFORM-STANDARDS-v1.md](BANKING-PLATFORM-STANDARDS-v1.md) — opinionated industry baseline for missing areas (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/banking-platform-standards.pdf))
+- [x] [STRATEGY-POST-RHEL.md](STRATEGY-POST-RHEL.md) — stabilization plan delivered (**Draft in repo**)
+- [ ] [STANDARDS-RHEL-PODMAN-v0.1.md](STANDARDS-RHEL-PODMAN-v0.1.md) — **client review** / v1.0 sign-off
+- [x] [BANKING-PLATFORM-STANDARDS-v1.md](BANKING-PLATFORM-STANDARDS-v1.md) — opinionated industry baseline for missing areas (**Draft in repo**)
 - [x] [INDUSTRY-REFERENCES.md](INDUSTRY-REFERENCES.md) — CIS, NIST, FFIEC, Azure, Red Hat links for standards pack (**Draft in repo**)
 - [ ] GRC records **CIS L1 vs STIG** decision (standards §5 — STIG only if mandated)
 - [ ] Vulnerability **gates** agreed with Kirk/security (P0 dev → UAT → prod re-scan)
-- [ ] [VM-DESIGN-CONSIDERATIONS.md](VM-DESIGN-CONSIDERATIONS.md) — UAT/prod VM design reviewed with platform ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/vm-design-considerations.pdf))
-- [ ] [EGRESS-ALLOW-LIST.md](EGRESS-ALLOW-LIST.md) — submitted for CAB / network team ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/egress-allow-list.pdf))
-- [ ] [NETWORK-IAM-STANDARDS.md](NETWORK-IAM-STANDARDS.md) — NSG + UAMI + developer CLI reviewed ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/network-iam-standards.pdf))
+- [ ] [VM-DESIGN-CONSIDERATIONS.md](VM-DESIGN-CONSIDERATIONS.md) — UAT/prod VM design reviewed with platform
+- [ ] [EGRESS-ALLOW-LIST.md](EGRESS-ALLOW-LIST.md) — submitted for CAB / network team
+- [ ] [NETWORK-IAM-STANDARDS.md](NETWORK-IAM-STANDARDS.md) — NSG + UAMI + developer CLI reviewed
 - [ ] [NETWORK-TO-TFVARS-BRIDGE.md](NETWORK-TO-TFVARS-BRIDGE.md) — filled with client subnet IDs / ARM IDs
-- [ ] [RISK-REGISTER-v1.md](RISK-REGISTER-v1.md) — reviewed; priorities agreed ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/program/risk-register.pdf))
-- [x] Environment improvement recommendations — [ENVIRONMENT-IMPROVEMENT-BACKLOG.md](ENVIRONMENT-IMPROVEMENT-BACKLOG.md) (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/program/env-improvement-backlog.pdf))
-- [ ] [INGRESS-DECISION-NGINX-SIDECAR.md](INGRESS-DECISION-NGINX-SIDECAR.md) — client sign-off (ING-6) ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/ingress-nginx-sidecar.pdf))
+- [ ] [RISK-REGISTER-v1.md](RISK-REGISTER-v1.md) — reviewed; priorities agreed
+- [x] Environment improvement recommendations — [ENVIRONMENT-IMPROVEMENT-BACKLOG.md](ENVIRONMENT-IMPROVEMENT-BACKLOG.md) (**Draft in repo**)
+- [ ] [INGRESS-DECISION-NGINX-SIDECAR.md](INGRESS-DECISION-NGINX-SIDECAR.md) — client sign-off (ING-6)
 
 ### Supporting technical docs
 
 - [ ] [ARCHITECTURE.md](ARCHITECTURE.md) — three-layer model KT-ready
 - [ ] [BUILD-LAYER.md](BUILD-LAYER.md) — container build + ACR pattern
 - [ ] [RUNTIME-WORKLOAD-EXAMPLE.md](RUNTIME-WORKLOAD-EXAMPLE.md) — platform stack reference
-- [ ] [DEVELOPER-AZURE-CLI-ACCESS.md](DEVELOPER-AZURE-CLI-ACCESS.md) — Patrick implements `developer-cli-access` ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/standards/dev-azure-cli-access-pattern.pdf))
-- [ ] [COMPLIANCE.md](COMPLIANCE.md) — shared with GRC (informational) ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/grc/compliance-mapping.pdf))
+- [ ] [DEVELOPER-AZURE-CLI-ACCESS.md](DEVELOPER-AZURE-CLI-ACCESS.md) — Patrick implements `developer-cli-access`
+- [ ] [COMPLIANCE.md](COMPLIANCE.md) — shared with GRC (informational)
 - [ ] [AZURE-NETWORK-ARCHITECTURE.md](AZURE-NETWORK-ARCHITECTURE.md) — target-state reference (if used in workshop)
 
 ### Reference IaC handoff (consultant authors; client applies)
@@ -117,7 +117,7 @@ Full mapping: [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md#sow-contract-bas
 
 ### Knowledge transfer
 
-- [x] [KT-AND-SUPPORT-PLAN.md](KT-AND-SUPPORT-PLAN.md) — session plan drafted (**Draft in repo** · [PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/program/kt-support-plan.pdf))
+- [x] [KT-AND-SUPPORT-PLAN.md](KT-AND-SUPPORT-PLAN.md) — session plan drafted (**Draft in repo**)
 - [ ] KT session 1 — architecture + three layers
 - [ ] KT session 2 — Terraform workload stack + tfvars bridge
 - [ ] KT session 3 — build layer + runtime deploy (`deploy-runtime-stack.sh`)
@@ -142,7 +142,7 @@ Full mapping: [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md#sow-contract-bas
 
 - [ ] Client provisions prod Linux environment(s)
 - [ ] dev → UAT → prod promotion via pipeline (client)
-- [x] Cutover **runbook drafts** delivered — [runbooks/CUTOVER-RUNBOOK.md](runbooks/CUTOVER-RUNBOOK.md), [runbooks/NETWORK-CUTOVER-RUNBOOK.md](runbooks/NETWORK-CUTOVER-RUNBOOK.md) ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/network/network-cutover-runbook.pdf)), [runbooks/PROMOTION-RUNBOOK.md](runbooks/PROMOTION-RUNBOOK.md) ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/runbooks/promotion-runbook.pdf)), [runbooks/OPERATIONS-RUNBOOK.md](runbooks/OPERATIONS-RUNBOOK.md) ([PDF](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/runbooks/operations-runbook.pdf)) (**Draft in repo**)
+- [x] Cutover **runbook drafts** delivered — [runbooks/CUTOVER-RUNBOOK.md](runbooks/CUTOVER-RUNBOOK.md), [runbooks/NETWORK-CUTOVER-RUNBOOK.md](runbooks/NETWORK-CUTOVER-RUNBOOK.md), [runbooks/PROMOTION-RUNBOOK.md](runbooks/PROMOTION-RUNBOOK.md), [runbooks/OPERATIONS-RUNBOOK.md](runbooks/OPERATIONS-RUNBOOK.md) (**Draft in repo**)
 - [ ] Cutover support in agreed window (consultant on-call)
 - [ ] DR/ASR for prod Linux (client executes)
 - [ ] Engagement close-out / lessons learned

@@ -100,9 +100,11 @@ build_one() {
     --from=gfm \
     --to=html5 \
     --standalone \
+    --embed-resources \
     --metadata "title=${title}" \
     --css "${CSS}" \
     --resource-path="${ROOT}/docs:${ROOT}" \
+    --lua-filter="${ROOT}/scripts/filters/pdf-local-links.lua" \
     -o "${html_path}"
 
   html_to_pdf "${html_path}" "${out_path}" "${chrome}"
