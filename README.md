@@ -17,7 +17,7 @@ Documentation and **reference** IaC for **stabilizing RHEL on Azure** and **stab
 
 1. **[Engagement alignment](docs/ENGAGEMENT-ALIGNMENT.md)** — scope, in/out, doc map  
 1b. **[Deliverables checklist](docs/DELIVERABLES-CHECKLIST.md)** — track completion  
-1c. **[Stabilization pack PDFs](https://github.com/timabiok/sika-ye-moja/tree/main/deliverables/stabilization-pack/v0.1)** — client review pack ([review email](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/REVIEW-EMAIL.md); rebuild: `./scripts/build-deliverable-pdfs.sh`)  
+1c. **[Stabilization pack PDFs](https://github.com/timabiok/sika-ye-moja/tree/main/deliverables/stabilization-pack/v0.1)** — client review pack (source docs in [`docs/`](docs/); rebuild PDFs: `./scripts/build-deliverable-pdfs.sh`; local review email: `python3 scripts/generate-review-email.py`)  
 2. **[SOW](docs/SOW.md)** — original contract (Fortified #743101, 60h advisory); [charter](docs/CHARTER-ADDENDUM.md) aligns discovery  
 3. **[Stabilization strategy](docs/STRATEGY-POST-RHEL.md)** — phased plan  
 4. **[Workshop 1 summary](docs/discovery-workshop-1.md)** — current state  

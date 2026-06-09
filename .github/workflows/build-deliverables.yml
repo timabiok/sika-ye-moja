@@ -28,13 +28,11 @@ jobs:
       - name: Build stabilization pack PDFs
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: |
-          ./scripts/build-deliverable-pdfs.sh --clean
-          python3 scripts/generate-review-email.py
+        run: ./scripts/build-deliverable-pdfs.sh --clean
 
       - name: Upload PDF pack artifact
         uses: actions/upload-artifact@v4
         with:
           name: stabilization-pack-v0.1
-          path: deliverables/stabilization-pack/v0.1/
+          path: deliverables/stabilization-pack/v0.1/**/*.pdf
           if-no-files-found: error

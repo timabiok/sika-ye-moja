@@ -11,10 +11,10 @@ Source markdown lives in `docs/`; client-facing PDFs are built to [`deliverables
 
 ```bash
 ./scripts/build-deliverable-pdfs.sh          # build all PDFs
-python3 scripts/generate-review-email.py     # refresh review email links
+python3 scripts/generate-review-email.py     # local email draft → .deliverables-build/review-email.md
 ```
 
-Review email draft: [`REVIEW-EMAIL.md`](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/REVIEW-EMAIL.md) · Manifest: [`manifest.json`](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/manifest.json)
+Source docs: [`docs/`](https://github.com/timabiok/sika-ye-moja/tree/main/docs) · Manifest: [`manifest.json`](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/manifest.json)
 
 ### SOW contract mapping (Fortified #743101)
 
@@ -122,7 +122,7 @@ Full mapping: [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md#sow-contract-bas
 - [ ] KT session 2 — Terraform workload stack + tfvars bridge
 - [ ] KT session 3 — build layer + runtime deploy (`deploy-runtime-stack.sh`)
 - [ ] Standards review meeting (week 5–6)
-- [ ] **Stabilization pack PDFs** sent for client review — [REVIEW-EMAIL.md](https://github.com/timabiok/sika-ye-moja/blob/main/deliverables/stabilization-pack/v0.1/REVIEW-EMAIL.md)
+- [ ] **Stabilization pack** sent for client review (`python3 scripts/generate-review-email.py` → local email with links to `docs/` on GitHub)
 
 **Phase 2 exit:** Standards pack accepted; client platform knows how to adopt IaC.
 

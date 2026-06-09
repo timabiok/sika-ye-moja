@@ -16,13 +16,14 @@ Client-facing PDFs built from `docs/*.md` sources. Markdown in `docs/` remains t
 # List mapped sources → outputs
 ./scripts/build-deliverable-pdfs.sh --list
 
-# Regenerate the review email table from manifest.json
+# Generate a local review email draft (links → source docs on GitHub)
 python3 scripts/generate-review-email.py
+# → .deliverables-build/review-email.md (gitignored; copy into your mail client)
 ```
 
 PDFs are written to `deliverables/stabilization-pack/v0.1/` per [`manifest.json`](manifest.json).
 
-Intermediate HTML is stored in `.deliverables-build/` (gitignored).
+Intermediate HTML and review email drafts live in `.deliverables-build/` (gitignored).
 
 ## Pack layout (`v0.1`)
 
@@ -37,7 +38,7 @@ Intermediate HTML is stored in `.deliverables-build/` (gitignored).
 
 ## Client review email
 
-After building PDFs, use [`v0.1/REVIEW-EMAIL.md`](v0.1/REVIEW-EMAIL.md) as the draft email body. Links point at GitHub blob URLs for each PDF.
+Run `python3 scripts/generate-review-email.py` to write `.deliverables-build/review-email.md`. The table links to each **source document** on GitHub (`docs/*.md`). Do not commit the generated email.
 
 ## Adding or renaming a deliverable
 

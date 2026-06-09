@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Generate the client review email from deliverables/stabilization-pack/manifest.json."""
+"""Generate a local client review email draft (not committed — see .gitignore)."""
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "deliverables/stabilization-pack/manifest.json"
-OUTPUT = ROOT / "deliverables/stabilization-pack/v0.1/REVIEW-EMAIL.md"
+DEFAULT_OUTPUT = ROOT / ".deliverables-build/review-email.md"
 
 
-def github_blob_link(repo: str, branch: str, output_path: str) -> str:
-    return f"https://github.com/{repo}/blob/{branch}/{output_path}"
+def github_blob_link(repo: str, branch: str, path: str) -> str:
+    return f"https://github.com/{repo}/blob/{branch}/{path}"
 
 
-def main() -> int:
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def build_email(manifest: dict) -> str:
     repo = manifest.get("repo", "{org}/{repo}")
     branch = manifest.get("branch", "main")
     version = manifest["version"]
@@ -40,8 +40,10 @@ def main() -> int:
     ]
 
     for item in manifest["deliverables"]:
-        link = github_blob_link(repo, branch, item["output"])
-        lines.append(f"| {item['section']} | {item['title']} | [{Path(item['output']).name}]({link}) |")
+        source = item["source"]
+        link = github_blob_link(repo, branch, source)
+        label = Path(source).name
+        lines.append(f"| {item['section']} | {item['title']} | [{label}]({link}) |")
 
     lines.extend(
         [
@@ -78,16 +80,38 @@ def main() -> int:
             "",
             "(Available separately if needed.)",
             "",
-            "---",
-            "",
-            f"_Generated from `{MANIFEST.relative_to(ROOT)}`. Re-run: `python3 scripts/generate-review-email.py`_",
-            "",
         ]
     )
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text("\n".join(lines), encoding="utf-8")
-    print(f"Wrote {OUTPUT.relative_to(ROOT)}")
+    return "\n".join(lines) + "\n"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Generate local review email draft with GitHub doc links.")
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=DEFAULT_OUTPUT,
+        help=f"Output path (default: {DEFAULT_OUTPUT.relative_to(ROOT)})",
+    )
+    parser.add_argument(
+        "--stdout",
+        action="store_true",
+        help="Print to stdout instead of writing a file",
+    )
+    args = parser.parse_args()
+
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    content = build_email(manifest)
+
+    if args.stdout:
+        sys.stdout.write(content)
+        return 0
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(content, encoding="utf-8")
+    print(f"Wrote {args.output.relative_to(ROOT)} (local only — not committed)")
     return 0
 
 

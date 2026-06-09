@@ -18,8 +18,9 @@ ansible/dist/
 .vscode/
 *.swp
 
-# Deliverable PDF build intermediates
+# Deliverable build intermediates and local-only drafts (review email, HTML)
 .deliverables-build/
+deliverables/stabilization-pack/**/REVIEW-EMAIL.md
 
 # Secrets
 *.pem
