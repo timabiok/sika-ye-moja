@@ -23,7 +23,7 @@ python3 scripts/generate-review-email.py
 
 PDFs are written to `deliverables/stabilization-pack/v0.1/` per [`manifest.json`](manifest.json).
 
-Intermediate HTML and review email drafts live in `.deliverables-build/` (gitignored). PDFs strip intra-repo `.md` cross-links (labels only); external `https://` links are kept.
+Intermediate HTML and review email drafts live in `.deliverables-build/` (gitignored). PDFs remove all intra-repo `.md` document references; external `https://` links are kept.
 
 ## Pack layout (`v0.1`)
 
