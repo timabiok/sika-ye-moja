@@ -1,0 +1,41 @@
+# Layer 3 — build only: Podman build from manifest → push to ACR.
+name: Build Container Images
+
+on:
+  push:
+    branches: [main, release/*]
+    paths:
+      - 'build/**'
+      - 'examples/runtime-images/**'
+      - '.github/workflows/build-images.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: [self-hosted, rhel, uat]
+    environment: uat
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push images to ACR
+        env:
+          ACR_NAME: ${{ vars.ACR_NAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_REVISION: ${{ github.sha }}
+          IMAGE_SOURCE: ${{ github.server_url }}/${{ github.repository }}
+          RUNNER_UAMI_ID: ${{ vars.RUNNER_UAMI_ID }}
+        run: ./build/scripts/build-push-images.sh
+
+      - name: Upload build manifest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-manifest-${{ github.sha }}
+          path: build/artifacts/build-manifest.json
+          retention-days: 90

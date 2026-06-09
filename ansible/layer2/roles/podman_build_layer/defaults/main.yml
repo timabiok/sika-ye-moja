@@ -1,0 +1,5 @@
+---
+build_layer_enabled: true
+build_layer_install_dir: /opt/compliance/build
+build_layer_manifest_src: images.manifest.json
+build_layer_scripts_src: scripts

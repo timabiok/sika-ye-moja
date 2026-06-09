@@ -1,0 +1,122 @@
+{
+  "pack": "stabilization-pack",
+  "version": "v0.1",
+  "repo": "timabiok/sika-ye-moja",
+  "branch": "main",
+  "deliverables": [
+    {
+      "section": "Program & Planning",
+      "title": "Stabilization strategy and phased plan",
+      "source": "docs/STRATEGY-POST-RHEL.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/stabilization-strategy.pdf"
+    },
+    {
+      "section": "Program & Planning",
+      "title": "Podman deployment gap list (prioritized P0–P2)",
+      "source": "docs/PODMAN-DEPLOY-GAP-LIST.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/podman-gap-list.pdf"
+    },
+    {
+      "section": "Program & Planning",
+      "title": "Environment improvement backlog (ticket-ready)",
+      "source": "docs/ENVIRONMENT-IMPROVEMENT-BACKLOG.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/env-improvement-backlog.pdf"
+    },
+    {
+      "section": "Program & Planning",
+      "title": "Risk register v1",
+      "source": "docs/RISK-REGISTER-v1.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/risk-register.pdf"
+    },
+    {
+      "section": "Program & Planning",
+      "title": "Knowledge transfer & support plan (proposed schedule)",
+      "source": "docs/KT-AND-SUPPORT-PLAN.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/kt-support-plan.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "RHEL + Podman standards v0.1",
+      "source": "docs/STANDARDS-RHEL-PODMAN-v0.1.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/rhel-podman-standards-v0.1.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Banking platform standards (access, registry, DR, naming, security gates)",
+      "source": "docs/BANKING-PLATFORM-STANDARDS-v1.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/banking-platform-standards.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Network & IAM standards (NSG, UAMI, PIM)",
+      "source": "docs/NETWORK-IAM-STANDARDS.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/network-iam-standards.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Registry & supply chain advisory (ACR Premium recommended)",
+      "source": "docs/REGISTRY-AND-SUPPLY-CHAIN.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/registry-supply-chain-advisory.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Egress allow-list draft (for CAB / network review)",
+      "source": "docs/EGRESS-ALLOW-LIST.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/egress-allow-list.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "VM design considerations (runner + runtime per environment)",
+      "source": "docs/VM-DESIGN-CONSIDERATIONS.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/vm-design-considerations.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Ingress approach (nginx sidecar until APIM is in scope)",
+      "source": "docs/INGRESS-DECISION-NGINX-SIDECAR.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/ingress-nginx-sidecar.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Developer Azure CLI access pattern (PIM, dev subscription)",
+      "source": "docs/DEVELOPER-AZURE-CLI-ACCESS.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/dev-azure-cli-access-pattern.pdf"
+    },
+    {
+      "section": "Development & Operations",
+      "title": "Clarification questions (Podman session pre-read)",
+      "source": "docs/CLARIFICATIONS-WITH-DEV-TEAM.md",
+      "output": "deliverables/stabilization-pack/v0.1/operations/podman-session-preread.pdf"
+    },
+    {
+      "section": "Development & Operations",
+      "title": "Promotion runbook (dev → UAT → prod)",
+      "source": "docs/runbooks/PROMOTION-RUNBOOK.md",
+      "output": "deliverables/stabilization-pack/v0.1/runbooks/promotion-runbook.pdf"
+    },
+    {
+      "section": "Development & Operations",
+      "title": "Operations runbook (patching, incidents, disk, rollback)",
+      "source": "docs/runbooks/OPERATIONS-RUNBOOK.md",
+      "output": "deliverables/stabilization-pack/v0.1/runbooks/operations-runbook.pdf"
+    },
+    {
+      "section": "Network",
+      "title": "Network discovery questionnaire",
+      "source": "docs/NETWORK-DISCOVERY-QUESTIONNAIRE.md",
+      "output": "deliverables/stabilization-pack/v0.1/network/network-discovery-questionnaire.pdf"
+    },
+    {
+      "section": "Network",
+      "title": "Network cutover runbook template",
+      "source": "docs/runbooks/NETWORK-CUTOVER-RUNBOOK.md",
+      "output": "deliverables/stabilization-pack/v0.1/network/network-cutover-runbook.pdf"
+    },
+    {
+      "section": "GRC / Security (informational)",
+      "title": "Compliance mapping (CIS L1 baseline; STIG only if required)",
+      "source": "docs/COMPLIANCE.md",
+      "output": "deliverables/stabilization-pack/v0.1/grc/compliance-mapping.pdf"
+    }
+  ]
+}

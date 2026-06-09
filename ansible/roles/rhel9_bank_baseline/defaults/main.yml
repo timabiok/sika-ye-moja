@@ -1,0 +1,78 @@
+---
+bank_banner: |
+  AUTHORIZED USE ONLY. All activity is monitored and recorded.
+  Unauthorized access is prohibited and subject to civil and criminal penalties.
+
+# Set FIPS:2021 only after organizational crypto approval and app compatibility testing.
+bank_enable_fips_crypto_policy: false
+bank_crypto_policy: FIPS
+
+# Layer 1 — Azure CLI (no az login secrets; UAMI attached at VM deploy).
+bank_install_azure_cli: true
+bank_azure_cli_version: present
+
+# Layer 1 — Logic Monitor collector prerequisites + optional silent install.
+# Full collector registration uses portal-specific installer URL (client provides).
+# Default: prerequisites + bootstrap script for layer-2; set URL to bake collector into SIG.
+bank_install_logicmonitor_prerequisites: true
+bank_enable_logicmonitor_collector: false
+bank_logicmonitor_installer_url: ""
+bank_logicmonitor_install_dir: /usr/local/logicmonitor
+bank_logicmonitor_collector_size: ""
+bank_logicmonitor_install_user: logicmonitor
+
+# Layer 1 — Python, pip, venv, Ansible Core (for layer-2 on-host bootstrap playbooks).
+bank_install_python_toolchain: true
+bank_ansible_venv_path: /opt/ansible/venv
+bank_ansible_core_version: ">=2.15.0"
+bank_ansible_galaxy_requirements_path: /opt/compliance/ansible/requirements.yml
+
+# Layer 1 — Azure Monitor Agent baseline (AMA extension + DCR at Layer 2 deploy).
+bank_install_azure_monitor_baseline: true
+# Bake AMA packages into image (optional); default installs prereqs + bootstrap only.
+bank_azure_monitor_install_packages: false
+bank_azure_monitor_packages:
+  - azure-monevent
+
+# Layer 1 — auditd, journald caps, logrotate, and long-term archive for high-volume logging.
+bank_enable_auditing_log_archiving: true
+bank_audit_syslog_facility: LOG_LOCAL6
+bank_audit_rsyslog_facility: local6
+bank_audit_forward_log_path: /var/log/audit-forward.log
+bank_auditd_settings:
+  - { key: max_log_file, value: 100 }
+  - { key: num_logs, value: 10 }
+  - { key: max_log_file_action, value: ROTATE }
+  - { key: space_left, value: 75 }
+  - { key: space_left_action, value: SYSLOG }
+  - { key: admin_space_left, value: 50 }
+  - { key: admin_space_left_action, value: SUSPEND }
+  - { key: disk_full_action, value: SUSPEND }
+  - { key: disk_error_action, value: SUSPEND }
+bank_journald_system_max_use: 2G
+bank_journald_system_keep_free: 1G
+bank_journald_runtime_max_use: 256M
+bank_journald_max_retention_sec: 30day
+bank_journald_rate_limit_interval: 30s
+bank_journald_rate_limit_burst: 20000
+bank_rsyslog_imjournal_rate_interval: 600
+bank_rsyslog_imjournal_rate_burst: 20000
+bank_logrotate_frequency: daily
+bank_logrotate_rotate_count: 90
+bank_audit_logrotate_rotate_count: 52
+bank_log_archive_dir: /var/log/archive
+bank_log_archive_retention_days: 365
+bank_log_archive_timer_calendar: daily
+bank_log_archive_sources:
+  - /var/log
+  - /var/log/audit
+
+# Layer 1 — dnf-automatic security patching (reboot deferred to change window).
+bank_install_dnf_automatic: true
+bank_dnf_automatic_upgrade_type: security
+bank_dnf_automatic_download_updates: true
+bank_dnf_automatic_apply_updates: true
+bank_dnf_automatic_reboot: never
+bank_dnf_automatic_random_sleep: 300
+bank_dnf_automatic_emit_via: motd,stdio
+bank_dnf_automatic_timer_unit: dnf-automatic-install.timer

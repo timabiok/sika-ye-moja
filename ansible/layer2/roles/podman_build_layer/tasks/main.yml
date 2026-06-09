@@ -1,0 +1,77 @@
+---
+- name: Install container build toolchain on runner
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - buildah
+      - skopeo
+      - jq
+      - git
+    state: present
+  when: build_layer_enabled | bool
+
+- name: Ensure build layer directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ build_layer_install_dir }}"
+    - "{{ build_layer_install_dir }}/scripts/lib"
+    - "{{ build_layer_install_dir }}/artifacts"
+  when: build_layer_enabled | bool
+
+- name: Deploy image build manifest to runner
+  ansible.builtin.copy:
+    src: "build/{{ build_layer_manifest_src }}"
+    dest: "{{ build_layer_install_dir }}/images.manifest.json"
+    owner: root
+    group: root
+    mode: "0644"
+  when: build_layer_enabled | bool
+
+- name: Deploy build-push script
+  ansible.builtin.copy:
+    src: "build/scripts/build-push-images.sh"
+    dest: "{{ build_layer_install_dir }}/scripts/build-push-images.sh"
+    owner: root
+    group: root
+    mode: "0750"
+  when: build_layer_enabled | bool
+
+- name: Deploy OCI labels helper
+  ansible.builtin.copy:
+    src: "build/scripts/lib/oci-labels.sh"
+    dest: "{{ build_layer_install_dir }}/scripts/lib/oci-labels.sh"
+    owner: root
+    group: root
+    mode: "0644"
+  when: build_layer_enabled | bool
+
+- name: Deploy runner build wrapper
+  ansible.builtin.copy:
+    src: build-images.sh
+    dest: /opt/compliance/bootstrap/build-images.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: build_layer_enabled | bool
+
+- name: Record build layer metadata
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/layer2-build-layer.json
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      {
+        "layer": "build",
+        "role": "github-runner",
+        "registry": "azure-container-registry",
+        "manifest": "{{ build_layer_install_dir }}/images.manifest.json",
+        "build_script": "/opt/compliance/bootstrap/build-images.sh",
+        "note": "Layer 3 CI calls build-images.sh or build/scripts/build-push-images.sh from repo checkout."
+      }
+  when: build_layer_enabled | bool

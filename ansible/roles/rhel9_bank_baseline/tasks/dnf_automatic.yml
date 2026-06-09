@@ -1,0 +1,48 @@
+---
+- name: Install dnf-automatic
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+  when: bank_install_dnf_automatic | bool
+
+- name: Configure dnf-automatic for security updates
+  ansible.builtin.copy:
+    dest: /etc/dnf/automatic.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [commands]
+      upgrade_type = {{ bank_dnf_automatic_upgrade_type }}
+      download_updates = {{ bank_dnf_automatic_download_updates | ternary('yes', 'no') }}
+      apply_updates = {{ bank_dnf_automatic_apply_updates | ternary('yes', 'no') }}
+      reboot = {{ bank_dnf_automatic_reboot }}
+      random_sleep = {{ bank_dnf_automatic_random_sleep }}
+
+      [emitters]
+      emit_via = {{ bank_dnf_automatic_emit_via }}
+
+      [email]
+      email_to = root
+      email_from = root@localhost
+
+      [command]
+      reboot_command = "/usr/sbin/shutdown -r +5 'Rebooting after dnf-automatic security update'"
+  notify: Enable dnf-automatic timer
+  when: bank_install_dnf_automatic | bool
+
+- name: Document dnf-automatic policy
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/dnf-automatic-policy.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      dnf-automatic (Layer 1 golden image)
+      ====================================
+      upgrade_type: {{ bank_dnf_automatic_upgrade_type }}
+      apply_updates: {{ bank_dnf_automatic_apply_updates }}
+      reboot: {{ bank_dnf_automatic_reboot }} (reboot in approved change window if when-needed)
+      timer: {{ bank_dnf_automatic_timer_unit }}
+      Manual override: dnf update --security (monthly maintenance window per standards)
+  when: bank_install_dnf_automatic | bool

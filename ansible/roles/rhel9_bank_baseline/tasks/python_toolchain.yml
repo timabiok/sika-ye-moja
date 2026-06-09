@@ -1,0 +1,109 @@
+---
+- name: Install Python toolchain packages
+  ansible.builtin.dnf:
+    name:
+      - python3
+      - python3-pip
+      - python3-devel
+    state: present
+  when: bank_install_python_toolchain | bool
+
+- name: Ensure Ansible venv parent directory exists
+  ansible.builtin.file:
+    path: "{{ bank_ansible_venv_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: bank_install_python_toolchain | bool
+
+- name: Create dedicated Ansible virtual environment
+  ansible.builtin.command:
+    cmd: python3 -m venv {{ bank_ansible_venv_path }}
+    creates: "{{ bank_ansible_venv_path }}/bin/activate"
+  when: bank_install_python_toolchain | bool
+
+- name: Upgrade pip in Ansible venv
+  ansible.builtin.pip:
+    name: pip
+    state: latest
+    virtualenv: "{{ bank_ansible_venv_path }}"
+  when: bank_install_python_toolchain | bool
+
+- name: Install Ansible Core in venv
+  ansible.builtin.pip:
+    name: "ansible-core{{ bank_ansible_core_version }}"
+    virtualenv: "{{ bank_ansible_venv_path }}"
+  when: bank_install_python_toolchain | bool
+
+- name: Install Ansible Galaxy collections into venv
+  ansible.builtin.command:
+    cmd: "{{ bank_ansible_venv_path }}/bin/ansible-galaxy collection install -r {{ bank_ansible_galaxy_requirements_path }}"
+    chdir: /opt/compliance/ansible
+  when: bank_install_python_toolchain | bool
+
+- name: Deploy Ansible configuration for on-host layer-2 runs
+  ansible.builtin.copy:
+    dest: /opt/compliance/ansible/ansible.cfg
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [defaults]
+      inventory = /opt/compliance/ansible/inventory/localhost
+      roles_path = /opt/compliance/ansible/layer2/roles
+      host_key_checking = False
+      retry_files_enabled = False
+      interpreter_python = auto_silent
+  when: bank_install_python_toolchain | bool
+
+- name: Deploy localhost inventory for layer-2 bootstrap
+  ansible.builtin.copy:
+    dest: /opt/compliance/ansible/inventory/localhost
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [local]
+      localhost ansible_connection=local
+  when: bank_install_python_toolchain | bool
+
+- name: Deploy Ansible activation helper
+  ansible.builtin.copy:
+    dest: /opt/ansible/activate
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      #!/usr/bin/env bash
+      # Source before running layer-2 playbooks on the VM.
+      source {{ bank_ansible_venv_path }}/bin/activate
+      export ANSIBLE_CONFIG=/opt/compliance/ansible/ansible.cfg
+  when: bank_install_python_toolchain | bool
+
+- name: Deploy layer-2 bootstrap runner script
+  ansible.builtin.copy:
+    dest: /opt/compliance/bootstrap/run-layer2-ansible.sh
+    owner: root
+    group: root
+    mode: "0750"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+      ROLE="${1:?Usage: run-layer2-ansible.sh github-runner|podman-runtime}"
+      source /opt/ansible/activate
+      exec ansible-playbook "/opt/compliance/ansible/layer2/playbooks/${ROLE}.yml"
+  when: bank_install_python_toolchain | bool
+
+- name: Document Python and Ansible readiness
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/python-ansible-readiness.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      Python 3, pip, and venv are installed for automation on this host.
+      Ansible Core runs from isolated venv: {{ bank_ansible_venv_path }}
+      Activate: source /opt/ansible/activate
+      Layer-2 bootstrap: /opt/compliance/bootstrap/run-layer2-ansible.sh <role>
+  when: bank_install_python_toolchain | bool

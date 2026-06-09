@@ -1,0 +1,27 @@
+---
+- name: Ensure compliance Ansible directory structure exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /opt/compliance/ansible
+    - /opt/compliance/ansible/inventory
+
+- name: Stage layer-2 Ansible playbooks and roles on golden image
+  ansible.builtin.copy:
+    src: layer2/
+    dest: /opt/compliance/ansible/layer2/
+    owner: root
+    group: root
+    mode: preserve
+
+- name: Stage Ansible Galaxy requirements for on-host runs
+  ansible.builtin.copy:
+    src: ansible-requirements.yml
+    dest: /opt/compliance/ansible/requirements.yml
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,4 @@
+---
+runner_install_dir: /opt/actions-runner
+runner_user: azureuser
+runner_env_label: uat

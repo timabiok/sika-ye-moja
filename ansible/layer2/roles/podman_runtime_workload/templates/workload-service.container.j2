@@ -1,0 +1,40 @@
+# {{ item.description }} — internal on {{ runtime_stack_network_name }}.
+[Unit]
+Description={{ item.description }}
+After={{ runtime_stack_network_name }}.service network-online.target
+Requires={{ runtime_stack_network_name }}.service
+Wants=network-online.target
+
+[Container]
+ContainerName={{ item.container_name }}
+Image={{ item.local_image }}
+Network={{ runtime_stack_network_name }}
+LogDriver=journald
+User={{ item.user }}
+Memory={{ item.memory_mb }}m
+Cpus={{ item.cpus }}
+NoNewPrivileges=true
+{% if item.read_only | default(true) %}
+ReadOnly=true
+Tmpfs=/tmp:rw,noexec,nosuid,size=64m
+{% endif %}
+Environment=APP_ENV={{ runtime_app_env }}
+{% for key, value in item.environment | default({}) | dictsort %}
+Environment={{ key }}={{ value }}
+{% endfor %}
+{% for vol in item.volumes | default([]) %}
+Volume={{ vol }}
+{% endfor %}
+HealthCmd={{ item.health_cmd | default('python -c "import urllib.request; urllib.request.urlopen(\'http://127.0.0.1:' ~ item.port ~ '/health\')" || exit 1') }}
+HealthInterval=30s
+HealthRetries=3
+HealthStartPeriod=20s
+HealthTimeout=5s
+
+[Service]
+Restart=on-failure
+RestartSec=10s
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target default.target

@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "displayName": "Linux VMs must use Trusted Launch",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Requires secureBoot and vTPM on Linux virtual machines.",
+    "metadata": {
+      "category": "Compute",
+      "version": "1.0.0"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "Microsoft.Compute/virtualMachines/securityProfile.securityType",
+                "notEquals": "TrustedLaunch"
+              },
+              {
+                "field": "Microsoft.Compute/virtualMachines/securityProfile.uefiSettings.secureBootEnabled",
+                "notEquals": "true"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

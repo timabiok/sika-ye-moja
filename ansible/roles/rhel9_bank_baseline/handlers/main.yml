@@ -1,0 +1,38 @@
+---
+- name: Restart auditd
+  ansible.builtin.service:
+    name: auditd
+    state: restarted
+
+- name: Restart chronyd
+  ansible.builtin.service:
+    name: chronyd
+    state: restarted
+
+- name: Remove LogicMonitor installer artifact
+  ansible.builtin.file:
+    path: /tmp/logicmonitor-setup.bin
+    state: absent
+
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+
+- name: Restart journald
+  ansible.builtin.service:
+    name: systemd-journald
+    state: restarted
+
+- name: Reload systemd and enable log archive timer
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: bank-log-archive.timer
+    enabled: true
+    state: started
+
+- name: Enable dnf-automatic timer
+  ansible.builtin.systemd:
+    name: "{{ bank_dnf_automatic_timer_unit }}"
+    enabled: true
+    state: started

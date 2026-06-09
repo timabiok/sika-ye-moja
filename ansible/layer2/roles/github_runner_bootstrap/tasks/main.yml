@@ -1,0 +1,74 @@
+---
+- name: Install GitHub Actions runner dependencies
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - git
+      - jq
+      - tar
+      - curl
+    state: present
+
+- name: Ensure runner install directory exists
+  ansible.builtin.file:
+    path: "{{ runner_install_dir }}"
+    state: directory
+    owner: "{{ runner_user }}"
+    group: "{{ runner_user }}"
+    mode: "0750"
+
+- name: Deploy actions-runner systemd unit template
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/actions-runner.service
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=GitHub Actions self-hosted runner
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      User={{ runner_user }}
+      WorkingDirectory={{ runner_install_dir }}
+      ExecStart={{ runner_install_dir }}/run.sh
+      Restart=always
+      RestartSec=10
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Deploy runner registration helper (layer 2 — token from Key Vault at deploy)
+  ansible.builtin.copy:
+    dest: /opt/compliance/bootstrap/register-github-runner.sh
+    owner: root
+    group: root
+    mode: "0750"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+      # Usage: GITHUB_ORG_URL=... GITHUB_RUNNER_TOKEN=... ./register-github-runner.sh
+      : "${GITHUB_ORG_URL:?}"
+      : "${GITHUB_RUNNER_TOKEN:?}"
+      cd {{ runner_install_dir }}
+      ./config.sh --url "${GITHUB_ORG_URL}" --token "${GITHUB_RUNNER_TOKEN}" \
+        --labels rhel,self-hosted,{{ runner_env_label }} --unattended --replace
+      systemctl enable --now actions-runner.service
+
+- name: Record layer-2 runner bootstrap metadata
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/layer2-github-runner.json
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      {
+        "layer": 2,
+        "role": "github-runner",
+        "runner_install_dir": "{{ runner_install_dir }}",
+        "register_script": "/opt/compliance/bootstrap/register-github-runner.sh",
+        "build_layer": "/opt/compliance/bootstrap/build-images.sh",
+        "note": "Download actions-runner package and run register script with GitHub token from Key Vault."
+      }

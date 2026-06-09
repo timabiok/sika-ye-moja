@@ -1,0 +1,34 @@
+name_prefix         = "acmebank"
+location            = "eastus2"
+gallery_name        = "acmebankgoldenimages"
+image_version       = "1.0.0"
+cost_center         = "CC-12345"
+application_owner   = "platform-engineering@acmebank.com"
+
+# Pin marketplace source in production for audit reproducibility (required)
+rhel_source_version = "9.4.20250401"
+
+replication_regions = ["centralus", "westus2"]
+replica_count       = 2
+
+enable_private_endpoints = true
+
+# Banking baseline — required (run ./scripts/package-ansible.sh 1.0.0 first)
+enable_ansible_customization = true
+ansible_archive_path         = "../../../ansible/dist/ansible-1.0.0.tar.gz"
+
+# Red Hat BYOS activation (store activation key in Key Vault first)
+# enable_rhsm            = true
+# rhsm_key_vault_id      = "/subscriptions/.../resourceGroups/.../providers/Microsoft.KeyVault/vaults/my-kv"
+# rhsm_secret_name       = "rhsm-activation-key"
+# rhsm_organization      = "1234567"
+# enable_key_vault_private_endpoint = true
+
+# Shared Log Analytics workspace — enables AIB build diagnostics AND is the destination for
+# layer-2 monitor-baseline DCR (syslog + perf counters). Use the same workspace ID in workload tfvars.
+# log_analytics_workspace_id = "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..."
+
+additional_tags = {
+  BusinessUnit = "Enterprise Technology"
+  Regulator    = "OCC"
+}

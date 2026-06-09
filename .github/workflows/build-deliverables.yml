@@ -1,0 +1,40 @@
+# Build client-facing stabilization pack PDFs from docs/*.md sources.
+name: Build Deliverable PDFs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'deliverables/stabilization-pack/manifest.json'
+      - 'deliverables/stabilization-pack/assets/**'
+      - 'scripts/build-deliverable-pdfs.sh'
+      - '.github/workflows/build-deliverables.yml'
+
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: Set up Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Build stabilization pack PDFs
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          ./scripts/build-deliverable-pdfs.sh --clean
+          python3 scripts/generate-review-email.py
+
+      - name: Upload PDF pack artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stabilization-pack-v0.1
+          path: deliverables/stabilization-pack/v0.1/
+          if-no-files-found: error

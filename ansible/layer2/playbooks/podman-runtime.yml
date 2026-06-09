@@ -1,0 +1,10 @@
+---
+# Layer 2 — Podman runtime VM bootstrap (run at deploy, not in SIG customize).
+- name: Layer 2 Podman runtime bootstrap
+  hosts: local
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: podman_runtime_bootstrap
+    - role: podman_runtime_workload

@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "displayName": "Deny public IP on bank workload VMs",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Prevents public IP association on NICs in regulated workloads.",
+    "metadata": {
+      "category": "Network",
+      "version": "1.0.0"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/networkInterfaces"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Network/networkInterfaces/ipConfigurations[*].properties.publicIPAddress.id",
+              "where": {
+                "notEquals": ""
+              }
+            },
+            "greater": 0
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

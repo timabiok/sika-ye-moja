@@ -1,0 +1,43 @@
+{
+  "schema": "bank-build-manifest/v1",
+  "description": "Data platform runtime images — Gorobi, ingestion, FastAPI APIs, Dagster + nginx ingress.",
+  "defaults": {
+    "platform": "linux/amd64",
+    "labels": {
+      "org.opencontainers.image.vendor": "client-platform",
+      "org.opencontainers.image.licenses": "Proprietary"
+    }
+  },
+  "images": [
+    {
+      "name": "gorobi",
+      "context": "examples/runtime-images/gorobi",
+      "dockerfile": "Dockerfile",
+      "description": "Gorobi trading/API integration route"
+    },
+    {
+      "name": "ingestion",
+      "context": "examples/runtime-images/ingestion",
+      "dockerfile": "Dockerfile",
+      "description": "File ingestion staging microservice"
+    },
+    {
+      "name": "fastapi-apis",
+      "context": "examples/runtime-images/fastapi-apis",
+      "dockerfile": "Dockerfile",
+      "description": "FastAPI microservices gateway"
+    },
+    {
+      "name": "dagster",
+      "context": "examples/runtime-images/dagster",
+      "dockerfile": "Dockerfile",
+      "description": "Dagster orchestration webserver"
+    },
+    {
+      "name": "nginx-proxy",
+      "context": "examples/runtime-images/nginx",
+      "dockerfile": "Dockerfile",
+      "description": "nginx reverse-proxy ingress for all platform services"
+    }
+  ]
+}

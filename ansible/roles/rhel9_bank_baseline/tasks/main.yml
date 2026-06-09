@@ -1,0 +1,134 @@
+---
+- name: Stage layer-2 Ansible artifacts on golden image (not executed at build)
+  ansible.builtin.import_tasks: layer2_artifacts.yml
+  tags:
+    - layer2_artifacts
+    - layer1
+
+- name: Install Python pip venv and Ansible Core (layer 1 baseline)
+  ansible.builtin.import_tasks: python_toolchain.yml
+  tags:
+    - python_toolchain
+    - layer1
+
+- name: Install Azure CLI (layer 1 baseline)
+  ansible.builtin.import_tasks: azure_cli.yml
+  tags:
+    - azure_cli
+    - layer1
+
+- name: Install Azure Monitor baseline (layer 1)
+  ansible.builtin.import_tasks: azure_monitor.yml
+  tags:
+    - azure_monitor
+    - layer1
+
+- name: Configure auditing and log archiving for high-volume services (layer 1)
+  ansible.builtin.import_tasks: auditing_log_archiving.yml
+  tags:
+    - auditing
+    - log_archiving
+    - layer1
+
+- name: Configure dnf-automatic security updates (layer 1)
+  ansible.builtin.import_tasks: dnf_automatic.yml
+  tags:
+    - dnf_automatic
+    - patching
+    - layer1
+
+- name: Install LogicMonitor prerequisites and bootstrap (layer 1)
+  ansible.builtin.import_tasks: logicmonitor.yml
+  tags:
+    - logicmonitor
+    - layer1
+
+- name: Deploy Azure Files mount bootstrap (layer 2 optional)
+  ansible.builtin.import_tasks: fileshare.yml
+  tags:
+    - fileshare
+    - layer1
+
+- name: Install bank baseline packages
+  ansible.builtin.dnf:
+    name:
+      - audispd-plugins
+      - crypto-policies-scripts
+      - policycoreutils-newrole
+    state: present
+
+- name: Enforce SELinux enforcing at boot
+  ansible.posix.selinux:
+    policy: targeted
+    state: enforcing
+    conf: /etc/selinux/config
+
+- name: Apply system-wide crypto policy (FIPS-oriented; validate in non-prod first)
+  ansible.builtin.command:
+    cmd: update-crypto-policies --set {{ bank_crypto_policy }}
+  register: crypto_policy
+  changed_when: "'Setting' in crypto_policy.stdout"
+  when: bank_enable_fips_crypto_policy | bool
+
+- name: Deploy authorized-use banner
+  ansible.builtin.copy:
+    dest: /etc/issue
+    content: "{{ bank_banner }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Harden sysctl network parameters
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - { key: net.ipv4.conf.all.rp_filter, value: "1" }
+    - { key: net.ipv4.conf.default.rp_filter, value: "1" }
+    - { key: net.ipv4.icmp_echo_ignore_broadcasts, value: "1" }
+    - { key: net.ipv4.conf.all.accept_redirects, value: "0" }
+    - { key: net.ipv4.conf.default.accept_redirects, value: "0" }
+    - { key: net.ipv4.conf.all.send_redirects, value: "0" }
+    - { key: net.ipv4.conf.default.send_redirects, value: "0" }
+
+- name: Ensure chrony uses Azure NTP when available
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.conf
+    regexp: '^server '
+    line: 'server 169.254.169.254 prefer iburst minpoll 4 maxpoll 4'
+    insertafter: '^# Use public servers'
+  notify: Restart chronyd
+
+- name: Create compliance artifact directory
+  ansible.builtin.file:
+    path: /opt/compliance/artifacts
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Record build metadata for auditors
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/build-metadata.json
+    mode: "0640"
+    content: |
+      {
+        "image_name": "rhel9-bank-golden",
+        "cis_profile": "xccdf_org.ssgproject.content_profile_cis",
+        "ansible_role": "rhel9_bank_baseline",
+        "azure_cli_installed": {{ bank_install_azure_cli | bool | lower }},
+        "logicmonitor_prerequisites": {{ bank_install_logicmonitor_prerequisites | bool | lower }},
+        "logicmonitor_collector_baked": {{ (bank_enable_logicmonitor_collector | bool and bank_logicmonitor_installer_url | length > 0) | lower }},
+        "python_toolchain_installed": {{ bank_install_python_toolchain | bool | lower }},
+        "azure_monitor_baseline": {{ bank_install_azure_monitor_baseline | bool | lower }},
+        "auditing_log_archiving": {{ bank_enable_auditing_log_archiving | bool | lower }},
+        "dnf_automatic": {{ bank_install_dnf_automatic | bool | lower }},
+        "dnf_automatic_upgrade_type": "{{ bank_dnf_automatic_upgrade_type }}",
+        "ansible_venv": "{{ bank_ansible_venv_path }}",
+        "deploy_layer": 1,
+        "build_timestamp_utc": "{{ ansible_date_time.iso8601 }}",
+        "build_host": "{{ inventory_hostname }}"
+      }

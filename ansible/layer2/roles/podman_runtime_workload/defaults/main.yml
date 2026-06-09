@@ -1,0 +1,67 @@
+---
+runtime_enable_workload_stack: true
+runtime_stack_network_name: bank-runtime-net
+runtime_nginx_publish_port: 8080
+runtime_nginx_local_image: localhost/bank-runtime-nginx:current
+runtime_nginx_image_name: nginx-proxy
+runtime_app_env: uat
+runtime_nginx_memory_mb: 256
+runtime_nginx_cpus: "0.5"
+runtime_auto_start_stack: false
+
+# Ingestion volume — data disk mount or Azure Files at /mnt/ingestion
+runtime_ingestion_data_host_path: /var/lib/containers/ingestion
+
+# Platform services — internal only; nginx publishes sole host port.
+runtime_workload_services:
+  - name: gorobi
+    acr_image: gorobi
+    local_image: localhost/bank-runtime-gorobi:current
+    container_name: gorobi
+    description: Gorobi API integration service
+    port: 8010
+    memory_mb: 512
+    cpus: "0.5"
+    user: "10001"
+    read_only: true
+    volumes: []
+
+  - name: ingestion
+    acr_image: ingestion
+    local_image: localhost/bank-runtime-ingestion:current
+    container_name: ingestion
+    description: Ingestion staging microservice
+    port: 8020
+    memory_mb: 512
+    cpus: "0.5"
+    user: "10001"
+    read_only: false
+    volumes:
+      - "{{ runtime_ingestion_data_host_path }}:/data/ingestion:rw,Z"
+    environment:
+      INGESTION_DATA_PATH: /data/ingestion
+
+  - name: fastapi-apis
+    acr_image: fastapi-apis
+    local_image: localhost/bank-runtime-fastapi-apis:current
+    container_name: fastapi-apis
+    description: FastAPI microservices
+    port: 8000
+    memory_mb: 512
+    cpus: "1.0"
+    user: "10001"
+    read_only: true
+    volumes: []
+
+  - name: dagster
+    acr_image: dagster
+    local_image: localhost/bank-runtime-dagster:current
+    container_name: dagster
+    description: Dagster orchestration webserver
+    port: 3000
+    memory_mb: 1024
+    cpus: "1.0"
+    user: "10002"
+    read_only: true
+    volumes: []
+    health_cmd: python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/server_info')" || exit 1

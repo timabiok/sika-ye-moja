@@ -1,0 +1,5 @@
+---
+runtime_data_mount_hint: /var/lib/containers
+runtime_enable_podman: true
+runtime_fileshare_nfs_mount_spec: ""
+runtime_fileshare_mount_point: /mnt/ingestion

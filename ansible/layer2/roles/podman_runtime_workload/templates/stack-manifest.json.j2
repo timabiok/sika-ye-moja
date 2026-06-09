@@ -1,0 +1,27 @@
+{
+  "stack": "data-platform-runtime",
+  "network": "{{ runtime_stack_network_name }}",
+  "publish_port": {{ runtime_nginx_publish_port }},
+  "services": [
+{% for svc in runtime_workload_services %}
+    {
+      "name": "{{ svc.name }}",
+      "acr_image": "{{ svc.acr_image }}",
+      "local_image": "{{ svc.local_image }}",
+      "container": "{{ svc.container_name }}",
+      "port": {{ svc.port }}
+    }{{ "," if not loop.last else "" }}
+{% endfor %}
+  ],
+  "ingress": {
+    "image": "{{ runtime_nginx_image_name }}",
+    "local_image": "{{ runtime_nginx_local_image }}"
+  },
+  "routes": {
+    "/gorobi/": "gorobi:8010",
+    "/ingestion/": "ingestion:8020",
+    "/api/": "fastapi-apis:8000",
+    "/dagster/": "dagster:3000"
+  },
+  "deploy_script": "/opt/compliance/bootstrap/deploy-runtime-stack.sh"
+}

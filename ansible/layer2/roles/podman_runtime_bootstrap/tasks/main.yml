@@ -1,0 +1,50 @@
+---
+- name: Install Podman runtime packages
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - podman-plugins
+      - xfsprogs
+    state: present
+  when: runtime_enable_podman | bool
+
+- name: Mount managed data disk for Podman volumes
+  ansible.builtin.command:
+    cmd: /opt/compliance/bootstrap/mount-data-disk.sh
+  environment:
+    DATA_DISK_MOUNT_POINT: "{{ runtime_data_mount_hint }}"
+  changed_when: true
+
+- name: Enable and start Podman socket
+  ansible.builtin.systemd:
+    name: podman.socket
+    enabled: true
+    state: started
+  when: runtime_enable_podman | bool
+
+- name: Mount Azure Files when NFS spec provided
+  ansible.builtin.command:
+    cmd: /opt/compliance/bootstrap/mount-azure-fileshare.sh
+  environment:
+    AZURE_FILES_PROTOCOL: NFS
+    AZURE_FILES_MOUNT_SPEC: "{{ runtime_fileshare_nfs_mount_spec }}"
+    AZURE_FILES_MOUNT_POINT: "{{ runtime_fileshare_mount_point }}"
+  when: runtime_fileshare_nfs_mount_spec | length > 0
+  changed_when: true
+
+- name: Record layer-2 runtime bootstrap metadata
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/layer2-podman-runtime.json
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      {
+        "layer": 2,
+        "role": "podman-runtime",
+        "data_mount": "{{ runtime_data_mount_hint }}",
+        "fileshare_mount": "{{ runtime_fileshare_mount_point if runtime_fileshare_nfs_mount_spec | length > 0 else '' }}",
+        "workload_stack": "api-service + nginx-proxy (Quadlet)",
+        "deploy_script": "/opt/compliance/bootstrap/deploy-runtime-stack.sh",
+        "note": "Layer 3: GitHub Actions builds images on runner, deploy-runtime-stack.sh on runtime."
+      }

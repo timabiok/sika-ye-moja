@@ -1,0 +1,104 @@
+---
+- name: Install LogicMonitor collector prerequisites
+  ansible.builtin.dnf:
+    name:
+      - sudo
+      - vim-common
+      - curl
+    state: present
+  when: bank_install_logicmonitor_prerequisites | bool
+
+- name: Ensure compliance bootstrap directory exists
+  ansible.builtin.file:
+    path: /opt/compliance/bootstrap
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_logicmonitor_prerequisites | bool
+
+- name: Deploy LogicMonitor layer-2 bootstrap script
+  ansible.builtin.copy:
+    src: enable-logicmonitor-collector.sh
+    dest: /opt/compliance/bootstrap/enable-logicmonitor-collector.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_logicmonitor_prerequisites | bool
+
+- name: Document LogicMonitor bootstrap readiness
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/logicmonitor-readiness.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      LogicMonitor collector prerequisites are installed in the golden image.
+      Portal-specific installer URL is applied at layer-2 (VM deploy), not baked into SIG.
+      Run: /opt/compliance/bootstrap/enable-logicmonitor-collector.sh
+      with LOGICMONITOR_INSTALLER_URL from LogicMonitor portal (Patrick / SOC).
+      Egress: LogicMonitor SaaS over TCP 443.
+  when: bank_install_logicmonitor_prerequisites | bool
+
+- name: Download LogicMonitor collector installer for golden image bake-in
+  ansible.builtin.get_url:
+    url: "{{ bank_logicmonitor_installer_url }}"
+    dest: /tmp/logicmonitor-setup.bin
+    mode: "0750"
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0
+
+- name: Check if LogicMonitor collector is already installed
+  ansible.builtin.stat:
+    path: "{{ bank_logicmonitor_install_dir }}"
+  register: bank_lm_install_dir
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0
+
+- name: Build LogicMonitor installer argument list
+  ansible.builtin.set_fact:
+    bank_lm_install_argv:
+      - /tmp/logicmonitor-setup.bin
+      - -y
+      - -d
+      - "{{ bank_logicmonitor_install_dir }}"
+      - -u
+      - "{{ bank_logicmonitor_install_user }}"
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0
+    - not bank_lm_install_dir.stat.exists
+
+- name: Add LogicMonitor collector size to installer arguments
+  ansible.builtin.set_fact:
+    bank_lm_install_argv: "{{ bank_lm_install_argv + ['-s', bank_logicmonitor_collector_size] }}"
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0
+    - not bank_lm_install_dir.stat.exists
+    - bank_logicmonitor_collector_size | length > 0
+
+- name: Install LogicMonitor collector silently in golden image
+  ansible.builtin.command:
+    argv: "{{ bank_lm_install_argv }}"
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0
+    - not bank_lm_install_dir.stat.exists
+  notify: Remove LogicMonitor installer artifact
+
+- name: Record LogicMonitor collector baked into image
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/logicmonitor-collector-installed.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      LogicMonitor collector was installed during golden image build (layer 1).
+      Install path: {{ bank_logicmonitor_install_dir }}
+      Reconcile device/collector assignment in LogicMonitor portal per environment.
+  when:
+    - bank_enable_logicmonitor_collector | bool
+    - bank_logicmonitor_installer_url | length > 0

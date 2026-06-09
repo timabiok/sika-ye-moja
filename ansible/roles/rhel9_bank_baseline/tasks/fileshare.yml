@@ -1,0 +1,29 @@
+---
+- name: Deploy managed data disk mount bootstrap script
+  ansible.builtin.copy:
+    src: mount-data-disk.sh
+    dest: /opt/compliance/bootstrap/mount-data-disk.sh
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Deploy Azure Files mount bootstrap script
+  ansible.builtin.copy:
+    src: mount-azure-fileshare.sh
+    dest: /opt/compliance/bootstrap/mount-azure-fileshare.sh
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Document Azure Files optional mount readiness
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/azure-files-readiness.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      Azure Files is optional alongside managed data disks on the Podman runtime VM.
+      Provision share via modules/storage-fileshare; mount at layer-2 with:
+      /opt/compliance/bootstrap/mount-azure-fileshare.sh
+      NFS is recommended for RHEL without AD join.
+      Grant runtime UAMI Storage File Data Privileged Contributor (NFS) on the storage account.

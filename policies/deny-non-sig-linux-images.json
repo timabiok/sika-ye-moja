@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "displayName": "Linux VMs must deploy from approved bank golden image gallery",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Restricts Linux VM source images to the enterprise Shared Image Gallery definition for RHEL 9 golden images.",
+    "metadata": {
+      "category": "Compute",
+      "version": "1.0.0"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "Microsoft.Compute/imagePublisher",
+            "notEquals": "bank.rhel9"
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+}

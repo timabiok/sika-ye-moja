@@ -1,0 +1,78 @@
+---
+- name: Import Microsoft package signing key
+  ansible.builtin.rpm_key:
+    key: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when: bank_install_azure_cli | bool
+
+- name: Configure Azure CLI yum repository
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/azure-cli.repo
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [azure-cli]
+      name=Azure CLI
+      baseurl=https://packages.microsoft.com/yumrepos/azure-cli
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+  when: bank_install_azure_cli | bool
+
+- name: Install Azure CLI
+  ansible.builtin.dnf:
+    name: azure-cli
+    state: "{{ bank_azure_cli_version }}"
+  when: bank_install_azure_cli | bool
+
+- name: Verify Azure CLI is available
+  ansible.builtin.command:
+    cmd: az version --output json
+  register: bank_az_version
+  changed_when: false
+  when: bank_install_azure_cli | bool
+
+- name: Ensure compliance scripts directory exists for developer CLI helper
+  ansible.builtin.file:
+    path: /opt/compliance/scripts
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_azure_cli | bool
+
+- name: Deploy developer temporary Entra CLI login script (dev VMs / Bastion)
+  ansible.builtin.copy:
+    src: az-login-developer.sh
+    dest: /opt/compliance/bootstrap/az-login-developer.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_azure_cli | bool
+
+- name: Deploy developer CLI login script to compliance scripts path
+  ansible.builtin.copy:
+    src: az-developer-login.sh
+    dest: /opt/compliance/scripts/az-developer-login.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_azure_cli | bool
+
+- name: Document Azure CLI readiness (no credentials in image)
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/azure-cli-readiness.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      Azure CLI authentication modes (banking baseline)
+      ================================================
+      UAT/prod VMs (runner + runtime): az login --identity -u <user-assigned-identity-resource-id>
+      Dev VM / Bastion (human developers): PIM activate → /opt/compliance/bootstrap/az-login-developer.sh
+      Developer laptops: PIM activate → scripts/az-developer-login.sh (repo root)
+      Never: service principal secrets on disk, shared admin accounts, permanent Contributor for devs
+      IaC: infra/terraform/modules/developer-cli-access/ (PIM eligible roles on dev subscription)
+      See docs/DEVELOPER-AZURE-CLI-ACCESS.md and VM-DESIGN-CONSIDERATIONS.md §6.2.
+  when: bank_install_azure_cli | bool

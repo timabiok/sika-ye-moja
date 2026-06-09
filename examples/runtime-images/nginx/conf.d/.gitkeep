@@ -1,0 +1,1 @@
+# platform-services.conf is mounted from /etc/nginx/runtime/conf.d/ at deploy (Ansible).

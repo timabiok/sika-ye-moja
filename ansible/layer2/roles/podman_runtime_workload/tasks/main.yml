@@ -1,0 +1,136 @@
+---
+- name: Install Quadlet support packages
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - containers-common
+    state: present
+  when: runtime_enable_workload_stack | bool
+
+- name: Ensure runtime configuration directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/containers/systemd
+    - /etc/containers/runtime
+    - /etc/nginx/runtime/conf.d
+    - "{{ runtime_ingestion_data_host_path }}"
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy Podman network Quadlet
+  ansible.builtin.template:
+    src: bank-runtime.network.j2
+    dest: "/etc/containers/systemd/{{ runtime_stack_network_name }}.network"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy platform service Quadlets
+  ansible.builtin.template:
+    src: workload-service.container.j2
+    dest: "/etc/containers/systemd/{{ item.name }}.container"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ runtime_workload_services }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy nginx reverse-proxy Quadlet
+  ansible.builtin.template:
+    src: nginx-proxy.container.j2
+    dest: /etc/containers/systemd/nginx-proxy.container
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy nginx proxy params
+  ansible.builtin.copy:
+    src: proxy-params.conf
+    dest: /etc/nginx/runtime/conf.d/proxy-params.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy nginx platform routing configuration
+  ansible.builtin.template:
+    src: platform-services.conf.j2
+    dest: /etc/nginx/runtime/conf.d/platform-services.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy nginx main config for container mount
+  ansible.builtin.copy:
+    src: nginx-runtime.conf
+    dest: /etc/nginx/runtime/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload quadlet systemd
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy Layer 3 runtime stack deploy script
+  ansible.builtin.copy:
+    src: deploy-runtime-stack.sh
+    dest: /opt/compliance/bootstrap/deploy-runtime-stack.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: runtime_enable_workload_stack | bool
+
+- name: Deploy runtime stack manifest
+  ansible.builtin.template:
+    src: stack-manifest.json.j2
+    dest: /etc/containers/runtime/stack-manifest.json
+    owner: root
+    group: root
+    mode: "0640"
+  when: runtime_enable_workload_stack | bool
+
+- name: Reload systemd to generate Quadlet units
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: runtime_enable_workload_stack | bool
+
+- name: Set Quadlet stack service enablement
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: "{{ runtime_auto_start_stack | bool }}"
+    state: "{{ 'started' if runtime_auto_start_stack | bool else 'stopped' }}"
+  loop: "{{ [runtime_stack_network_name ~ '.service'] + (runtime_workload_services | map(attribute='name') | map('regex_replace', '^(.*)$', '\\1.service') | list) + ['nginx-proxy.service'] }}"
+  when: runtime_enable_workload_stack | bool
+
+- name: Record runtime workload stack metadata
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/layer2-runtime-workload.json
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      {
+        "layer": 2,
+        "stack": "gorobi + ingestion + fastapi-apis + dagster + nginx-proxy",
+        "network": "{{ runtime_stack_network_name }}",
+        "publish_port": {{ runtime_nginx_publish_port }},
+        "services": {{ runtime_workload_services | map(attribute='name') | list | to_json }},
+        "routes": ["/gorobi/", "/ingestion/", "/api/", "/dagster/"],
+        "deploy_script": "/opt/compliance/bootstrap/deploy-runtime-stack.sh",
+        "examples_path": "examples/runtime-images/",
+        "auto_start": {{ runtime_auto_start_stack | bool | lower }}
+      }
+  when: runtime_enable_workload_stack | bool

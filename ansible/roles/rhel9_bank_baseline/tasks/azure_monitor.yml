@@ -1,0 +1,98 @@
+---
+- name: Install Azure Monitor Agent prerequisites
+  ansible.builtin.dnf:
+    name:
+      - rsyslog
+      - python3
+      - python3-pip
+      - curl
+      - ca-certificates
+    state: present
+  when: bank_install_azure_monitor_baseline | bool
+
+- name: Import Microsoft package repository for Azure Monitor packages
+  ansible.builtin.rpm_key:
+    key: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when:
+    - bank_install_azure_monitor_baseline | bool
+    - bank_azure_monitor_install_packages | bool
+
+- name: Configure Microsoft yum repository for Azure Monitor
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/microsoft-azuremonitor.repo
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [azuremonitor]
+      name=Azure Monitor Agent
+      baseurl=https://packages.microsoft.com/rhel/{{ ansible_distribution_major_version }}/prod/
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+  when:
+    - bank_install_azure_monitor_baseline | bool
+    - bank_azure_monitor_install_packages | bool
+
+- name: Install Azure Monitor Agent packages (optional image bake-in)
+  ansible.builtin.dnf:
+    name: "{{ bank_azure_monitor_packages }}"
+    state: present
+  register: bank_ama_pkg_install
+  failed_when: false
+  when:
+    - bank_install_azure_monitor_baseline | bool
+    - bank_azure_monitor_install_packages | bool
+
+- name: Ensure Azure Monitor agent state directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/opt/microsoft/azuremonitoragent
+    - /var/opt/microsoft/azuremonitoragent
+    - /opt/compliance/bootstrap
+  when: bank_install_azure_monitor_baseline | bool
+
+- name: Deploy rsyslog fragment for AMA syslog collection readiness
+  ansible.builtin.copy:
+    dest: /etc/rsyslog.d/40-azuremonitor.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      # Banking baseline — auth and daemon facilities for Azure Monitor DCR (syslog).
+      auth,authpriv.*                 /var/log/secure
+      daemon,kern,syslog.warning      /var/log/messages
+  notify: Restart rsyslog
+  when: bank_install_azure_monitor_baseline | bool
+
+- name: Deploy Azure Monitor layer-2 association bootstrap script
+  ansible.builtin.copy:
+    src: associate-azure-monitor.sh
+    dest: /opt/compliance/bootstrap/associate-azure-monitor.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_install_azure_monitor_baseline | bool
+
+- name: Document Azure Monitor golden image readiness
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/azure-monitor-readiness.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      Azure Monitor baseline (Layer 1 golden image)
+      =============================================
+      Agent install mode: {{ 'packages in image' if bank_azure_monitor_install_packages else 'AMA VM extension at Layer 2 deploy' }}
+      Layer 2: Terraform monitor-baseline module attaches DCR + AzureMonitorLinuxAgent extension.
+      Layer 2 manual: /opt/compliance/bootstrap/associate-azure-monitor.sh (emergency only).
+      Egress required: *.ods.opinsights.azure.com, *.oms.opinsights.azure.com, dc.services.visualstudio.com (443)
+      No workspace keys or DCR IDs are stored in the golden image.
+      UAMI at deploy: Monitoring Metrics Publisher role on DCR (assigned by client platform).
+  when: bank_install_azure_monitor_baseline | bool

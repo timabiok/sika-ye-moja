@@ -1,0 +1,10 @@
+---
+# Layer 2 — GitHub self-hosted runner VM bootstrap (run at deploy, not in SIG customize).
+- name: Layer 2 GitHub runner bootstrap
+  hosts: local
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: github_runner_bootstrap
+    - role: podman_build_layer

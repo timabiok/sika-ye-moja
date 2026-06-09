@@ -1,0 +1,61 @@
+# Layer 3 reference workflow — manifest build → ACR push → runtime deploy.
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main, release/*]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [self-hosted, rhel, uat]
+    environment: uat
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push all manifest images to ACR
+        env:
+          ACR_NAME: ${{ vars.ACR_NAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_REVISION: ${{ github.sha }}
+          IMAGE_SOURCE: ${{ github.server_url }}/${{ github.repository }}
+          RUNNER_UAMI_ID: ${{ vars.RUNNER_UAMI_ID }}
+        run: ./build/scripts/build-push-images.sh
+
+      - name: Upload build manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-manifest-${{ github.sha }}
+          path: build/artifacts/build-manifest.json
+          retention-days: 90
+
+  deploy-uat:
+    needs: build
+    runs-on: [self-hosted, rhel, uat]
+    environment: uat
+    steps:
+      - name: Deploy runtime stack to Podman VM
+        run: |
+          TAG="${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no deploy@${{ vars.RUNTIME_VM_IP }} \
+            "ACR_NAME=${{ vars.ACR_NAME }} IMAGE_TAG=${TAG} RUNTIME_UAMI_ID=${{ vars.RUNTIME_UAMI_ID }} \
+             /opt/compliance/bootstrap/deploy-runtime-stack.sh"
+
+  deploy-prod:
+    needs: deploy-uat
+    runs-on: [self-hosted, rhel, prod]
+    environment: production
+    steps:
+      - name: Deploy runtime stack to production VM
+        run: |
+          TAG="${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no deploy@${{ vars.RUNTIME_VM_IP }} \
+            "ACR_NAME=${{ vars.ACR_NAME }} IMAGE_TAG=${TAG} RUNTIME_UAMI_ID=${{ vars.RUNTIME_UAMI_ID }} \
+             /opt/compliance/bootstrap/deploy-runtime-stack.sh"

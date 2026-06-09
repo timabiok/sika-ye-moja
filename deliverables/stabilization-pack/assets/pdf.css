@@ -1,0 +1,122 @@
+/* Stabilization pack PDF styling (pandoc HTML → print) */
+@page {
+  margin: 20mm 18mm 22mm 18mm;
+}
+
+html {
+  font-size: 11pt;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.45;
+  color: #1a1a1a;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4 {
+  color: #0f2d52;
+  line-height: 1.25;
+  page-break-after: avoid;
+}
+
+h1 {
+  font-size: 1.65rem;
+  border-bottom: 2px solid #0f2d52;
+  padding-bottom: 0.35rem;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid #d0d7de;
+  padding-bottom: 0.2rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+  margin-top: 1.1rem;
+}
+
+p, li {
+  orphans: 3;
+  widows: 3;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+blockquote {
+  margin: 0.75rem 0;
+  padding: 0.5rem 0.85rem;
+  border-left: 4px solid #6e7781;
+  background: #f6f8fa;
+  color: #424a53;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.75rem 0 1rem;
+  font-size: 0.92rem;
+  page-break-inside: avoid;
+}
+
+th, td {
+  border: 1px solid #d0d7de;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f6f8fa;
+  font-weight: 600;
+}
+
+tr:nth-child(even) td {
+  background: #fafbfc;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88em;
+  background: #f6f8fa;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+pre {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  page-break-inside: avoid;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #d0d7de;
+  margin: 1.25rem 0;
+}
+
+ul, ol {
+  padding-left: 1.35rem;
+}
+
+li {
+  margin: 0.2rem 0;
+}

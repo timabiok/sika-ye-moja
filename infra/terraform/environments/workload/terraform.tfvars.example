@@ -1,0 +1,27 @@
+name_prefix         = "uat-data"
+location            = "eastus2"
+resource_group_name = "rg-uat-data-platform"
+
+sig_image_version_id = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Compute/galleries/<gallery>/images/<image>/versions/<version>"
+
+# Map from client as-built — see docs/NETWORK-TO-TFVARS-BRIDGE.md
+runner_subnet_id  = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Network/virtualNetworks/<vnet>/subnets/ci"
+runtime_subnet_id = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Network/virtualNetworks/<vnet>/subnets/app"
+
+runner_private_ip_address  = "10.20.2.10"
+runtime_private_ip_address = "10.20.3.10"
+bastion_subnet_prefix      = "10.20.1.0/24"
+# apim_subnet_prefix       = "10.20.4.0/24"
+
+admin_ssh_public_key = "ssh-ed25519 AAAA..."
+
+acr_id       = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<acr>"
+key_vault_id = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.KeyVault/vaults/<kv>"
+
+runner_env_label          = "uat"
+runtime_data_disk_size_gb = 256
+enable_ingestion_fileshare = false
+
+# Banking Azure Monitor baseline (DCR + AMA extension on both VMs)
+enable_azure_monitor       = true
+log_analytics_workspace_id = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.OperationalInsights/workspaces/<la-workspace>"

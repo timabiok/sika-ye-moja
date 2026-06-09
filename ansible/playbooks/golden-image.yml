@@ -1,0 +1,25 @@
+---
+# Supplemental hardening run by Azure Image Builder Ansible customizer.
+# Primary CIS remediation is applied via OpenSCAP in the Terraform image template.
+- name: RHEL 9 bank golden image supplemental baseline
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    bank_banner: |
+      AUTHORIZED USE ONLY. All activity is monitored and recorded.
+      Unauthorized access is prohibited and subject to civil and criminal penalties.
+    # Layer 1 defaults (override at build time if client approves LM bake-in):
+    bank_install_python_toolchain: true
+    bank_install_azure_cli: true
+    bank_install_azure_monitor_baseline: true
+    bank_azure_monitor_install_packages: false
+    bank_enable_auditing_log_archiving: true
+    bank_install_dnf_automatic: true
+    bank_install_logicmonitor_prerequisites: true
+    bank_enable_logicmonitor_collector: false
+    # bank_logicmonitor_installer_url: "https://<logicmonitor-portal>/.../LogicMonitorSetup.bin"
+
+  roles:
+    - role: rhel9_bank_baseline

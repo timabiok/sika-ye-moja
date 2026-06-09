@@ -1,0 +1,246 @@
+---
+- name: Install auditing and log archiving packages
+  ansible.builtin.dnf:
+    name:
+      - audit
+      - audispd-plugins
+      - logrotate
+      - rsyslog
+    state: present
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Ensure auditd service is enabled
+  ansible.builtin.service:
+    name: auditd
+    enabled: true
+    state: started
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Configure auditd for high-volume rotation and disk pressure
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: "^{{ item.key }}\\s*="
+    line: "{{ item.key }} = {{ item.value }}"
+    create: false
+  loop: "{{ bank_auditd_settings }}"
+  notify: Restart auditd
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Deploy banking auditd rules (privileged actions, identity, exec, containers)
+  ansible.builtin.copy:
+    dest: /etc/audit/rules.d/bank-baseline.rules
+    mode: "0600"
+    content: |
+      ## Identity and authentication
+      -w /etc/passwd -p wa -k identity
+      -w /etc/group -p wa -k identity
+      -w /etc/shadow -p wa -k identity
+      -w /etc/gshadow -p wa -k identity
+      -w /etc/sudoers -p wa -k privileged-policy
+      -w /etc/sudoers.d/ -p wa -k privileged-policy
+      -w /var/log/lastlog -p wa -k logins
+      -w /var/run/faillock/ -p wa -k logins
+
+      ## Privileged execution
+      -w /usr/bin/sudo -p x -k privileged-exec
+      -w /usr/bin/su -p x -k privileged-exec
+      -a always,exit -F arch=b64 -S execve -k execve
+      -a always,exit -F arch=b32 -S execve -k execve
+
+      ## Time and network policy
+      -a always,exit -F arch=b64 -S adjtimex,settimeofday,clock_settime -k time-change
+      -w /etc/hosts -p wa -k network-policy
+      -w /etc/sysconfig/network -p wa -k network-policy
+
+      ## Container runtime (high-volume on Podman runtime VM)
+      -w /usr/bin/podman -p x -k container-runtime
+      -w /usr/bin/buildah -p x -k container-runtime
+      -w /var/lib/containers -p wa -k container-data
+  notify: Restart auditd
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Enable audisp syslog plugin for audit forwarding
+  ansible.builtin.copy:
+    dest: /etc/audit/plugins.d/syslog.conf
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      active = yes
+      direction = out
+      path = builtin_syslog
+      type = builtin
+      args = {{ bank_audit_syslog_facility }}
+      format = string
+  notify: Restart auditd
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Ensure journald drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Configure journald for high-volume logging services
+  ansible.builtin.copy:
+    dest: /etc/systemd/journald.conf.d/50-banking-highvolume.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Journal]
+      Storage=persistent
+      Compress=yes
+      SystemMaxUse={{ bank_journald_system_max_use }}
+      SystemKeepFree={{ bank_journald_system_keep_free }}
+      RuntimeMaxUse={{ bank_journald_runtime_max_use }}
+      MaxRetentionSec={{ bank_journald_max_retention_sec }}
+      ForwardToSyslog=yes
+      RateLimitIntervalSec={{ bank_journald_rate_limit_interval }}
+      RateLimitBurst={{ bank_journald_rate_limit_burst }}
+  notify: Restart journald
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Configure rsyslog imjournal rate limits for high-volume services
+  ansible.builtin.copy:
+    dest: /etc/rsyslog.d/41-banking-highvolume.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      module(load="imjournal"
+             StateFile="imjournal.state"
+             RateLimit.Interval="{{ bank_rsyslog_imjournal_rate_interval }}"
+             RateLimit.Burst="{{ bank_rsyslog_imjournal_rate_burst }}")
+
+      # Audit events forwarded via audisp (LOCAL6) — separate file for archive + AMA pickup
+      {{ bank_audit_rsyslog_facility }}.*    {{ bank_audit_forward_log_path }}
+      & stop
+  notify: Restart rsyslog
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Deploy logrotate policy for high-volume OS logs
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/bank-highvolume
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      /var/log/messages
+      /var/log/secure
+      /var/log/maillog
+      /var/log/cron
+      /var/log/spooler
+      {{ bank_audit_forward_log_path }}
+      {
+          {{ bank_logrotate_frequency }}
+          rotate {{ bank_logrotate_rotate_count }}
+          compress
+          delaycompress
+          missingok
+          notifempty
+          sharedscripts
+          postrotate
+              /usr/bin/systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+          endscript
+      }
+
+      /var/log/audit/audit.log
+      {
+          weekly
+          rotate {{ bank_audit_logrotate_rotate_count }}
+          compress
+          delaycompress
+          missingok
+          notifempty
+          sharedscripts
+          postrotate
+              /sbin/service auditd rotate >/dev/null 2>&1 || true
+          endscript
+      }
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Create long-term log archive directory
+  ansible.builtin.file:
+    path: "{{ bank_log_archive_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Ensure compliance scripts directory exists
+  ansible.builtin.file:
+    path: /opt/compliance/scripts
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Deploy log archive and retention script
+  ansible.builtin.copy:
+    src: archive-rotated-logs.sh
+    dest: /opt/compliance/scripts/archive-rotated-logs.sh
+    owner: root
+    group: root
+    mode: "0750"
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Install daily log archive systemd timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/bank-log-archive.timer
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Archive rotated logs for banking retention
+
+      [Timer]
+      OnCalendar={{ bank_log_archive_timer_calendar }}
+      RandomizedDelaySec=900
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Install log archive systemd service unit
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/bank-log-archive.service
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Move compressed rotated logs to archive and enforce retention
+
+      [Service]
+      Type=oneshot
+      Environment=LOG_ARCHIVE_DIR={{ bank_log_archive_dir }}
+      Environment=LOG_ARCHIVE_RETENTION_DAYS={{ bank_log_archive_retention_days }}
+      Environment=LOG_ARCHIVE_SOURCES="{{ bank_log_archive_sources | join(' ') }}"
+      ExecStart=/opt/compliance/scripts/archive-rotated-logs.sh
+  notify: Reload systemd and enable log archive timer
+  when: bank_enable_auditing_log_archiving | bool
+
+- name: Document auditing and log archiving baseline
+  ansible.builtin.copy:
+    dest: /opt/compliance/artifacts/auditing-log-archiving.txt
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      Auditing and log archiving (Layer 1 golden image)
+      =================================================
+      auditd: enabled with banking rules + audisp syslog ({{ bank_audit_syslog_facility }})
+      journald: capped at {{ bank_journald_system_max_use }} persistent storage; forwards to rsyslog
+      logrotate: {{ bank_logrotate_frequency }} rotation, {{ bank_logrotate_rotate_count }} generations (rsyslog logs)
+      archive: {{ bank_log_archive_dir }} — retention {{ bank_log_archive_retention_days }} days (systemd timer)
+      High-volume targets: journald (Podman/systemd), rsyslog, auditd, {{ bank_audit_forward_log_path }}
+      SIEM path: Azure Monitor DCR syslog at Layer 2 deploy (see azure-monitor-readiness.txt)
+  when: bank_enable_auditing_log_archiving | bool

@@ -1,0 +1,12 @@
+# Banking reference — internal bridge for API + nginx sidecar.
+[Unit]
+Description=Bank runtime Podman network
+After=network-online.target
+Wants=network-online.target
+
+[Network]
+NetworkName={{ runtime_stack_network_name }}
+Driver=bridge
+
+[Install]
+WantedBy=multi-user.target default.target
