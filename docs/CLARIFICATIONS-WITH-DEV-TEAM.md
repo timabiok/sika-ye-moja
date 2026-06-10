@@ -1,10 +1,10 @@
-# Clarifications with dev / platform team (Anatoliy)
+# Clarifications with dev / platform team
 
-**Purpose:** Questions for Anatoliy (and Patrick/platform as needed) to close Workshop 1 gaps, align [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md), and unblock Track A (RHEL) + Track B (network).
+**Purpose:** Questions for the client dev lead (and client platform as needed) to close Workshop 1 gaps, align [ENGAGEMENT-ALIGNMENT.md](ENGAGEMENT-ALIGNMENT.md), and unblock Track A (RHEL) + Track B (network).
 
 **How to use:** Schedule 45–60 min; send list in advance; record answers in this doc or meeting notes. Tag each answer: **Decided** / **TBD** / **Owner** / **Due**.
 
-**Scope:** **In scope** = consultant documents/advises · **Client** = Anatoliy/team executes · **Out of scope** = redirect (app, network build, licensing).
+**Scope:** **In scope** = consultant documents/advises · **Client** = Client dev lead/team executes · **Out of scope** = redirect (app, network build, licensing).
 
 ---
 
@@ -14,7 +14,7 @@
 |---|----------|----------------|-------|
 | 1.1 | Confirm focus is **stabilize dev Podman** → **UAT → first prod Linux** (no prod Linux today), not contract Ubuntu→RHEL wording? | Aligns [SOW.md](SOW.md) vs [CHARTER-ADDENDUM.md](CHARTER-ADDENDUM.md) | In scope |
 | 1.2 | Is **WSL2/Ubuntu on laptops** staying, or moving dev to **RHEL VMs**? | Standards + CI parity | Client decision |
-| 1.3 | Who is **primary approver** (Patrick, Anatoliy, CAB)? | Changes and cutover | Client |
+| 1.3 | Who is **primary approver** (Client platform, Client dev lead, CAB)? | Changes and cutover | Client |
 | 1.4 | Environments in scope: **prod only**, or prod + **UAT + dev** + DR? | Phase plan | In scope |
 | 1.5 | **Freeze / blackout** dates for prod? | Scheduling | Client |
 | 1.6 | Is consultant delivering **reference IaC only**, or expected to **apply** in Azure? | Scope boundary | **Out of scope:** apply unless CO |
@@ -78,23 +78,23 @@
 
 ---
 
-## 6. Access for consultant (Tim)
+## 6. Consultant access
 
 | # | Question | Why it matters | Scope |
 |---|----------|----------------|-------|
-| 6.1 | **Vaco email / Teams** — fully working? | Collaboration | Client |
-| 6.2 | **SSH or Bastion** access to dev Linux VM for read-only assessment? | Phase 1 | **Done** — Tim has Linux VM access |
-| 6.3 | Read-only **Azure RBAC** on dev + prod subscriptions? | Track B; VM Azure context | **Pending** — request `Reader` from Patrick/platform |
-| 6.4 | **Ongoing access** duration and escalation (Anatoliy, Patrick)? | SOW KT period | In scope |
+| 6.1 | **Consultant email / Teams** — fully working? | Collaboration | Client |
+| 6.2 | **SSH or Bastion** access to dev Linux VM for read-only assessment? | Phase 1 | **Done** — Consultant has Linux VM access |
+| 6.3 | Read-only **Azure RBAC** on dev + prod subscriptions? | Track B; VM Azure context | **Pending** — request `Reader` from client platform |
+| 6.4 | **Ongoing access** duration and escalation (Client dev lead, Client platform)? | SOW KT period | In scope |
 | 6.5 | NDA / **data handling** on prod (PII, trading data)—snapshots allowed? | Compliance | Client GRC |
 
 ---
 
-## 7. Network & integrations (loop in Patrick / network if needed)
+## 7. Network & integrations (loop in client platform / network if needed)
 
 | # | Question | Why it matters | Scope |
 |---|----------|----------------|-------|
-| 7.1 | **Architecture diagram** (Azure + hybrid + Linux box)—who delivers by when? | Blocker | **Client** (Anatoliy) |
+| 7.1 | **Architecture diagram** (Azure + hybrid + Linux box)—who delivers by when? | Blocker | **Client** (Client dev lead) |
 | 7.2 | Prod VM: **public IP**, private only, VPN/ExpressRoute to access? | Security | Client / network |
 | 7.3 | **Egress** from VM: direct Internet, proxy, firewall in path? | Patch, Snowflake, GH | Network |
 | 7.4 | **NGINX** on VM: stay, move to APIM/Front Door when? | Separate workstream | **Out of scope** unless CO |
@@ -108,7 +108,7 @@
 
 | # | Question | Why it matters | Scope |
 |---|----------|----------------|-------|
-| 8.1 | **Logic Monitor** rollout for this Linux host—timeline? | Q5 | **Client** (Patrick) |
+| 8.1 | **Logic Monitor** rollout for this Linux host—timeline? | Q5 | **Client** (Client platform) |
 | 8.2 | What is monitored today (OS, Podman/containers, disks, APIs)? | Gaps | Client |
 | 8.3 | **ASR** for this VM: configured, tested, includes data disk? | DR | **Client executes** test |
 | 8.4 | **Backup** policy (Azure Backup, snapshots)—RPO/RTO expectations? | Standards | Client |
@@ -133,16 +133,16 @@
 
 | # | Question | Why it matters | Scope |
 |---|----------|----------------|-------|
-| 10.1 | **High-level schema** Anatoliy offered—format and due date? | Follow-up task | Client |
+| 10.1 | **High-level schema** Client dev lead offered—format and due date? | Follow-up task | Client |
 | 10.2 | Existing **runbooks**, architecture docs, passwords in KV? | Discovery | Client provides |
 | 10.3 | Preferred format for **standards** (Word, Confluence, repo markdown)? | Deliverable | Client |
-| 10.4 | Review cadence: weekly with Anatoliy + Patrick? | Engagement | In scope |
+| 10.4 | Review cadence: weekly with client dev lead + Client platform? | Engagement | In scope |
 
 ---
 
 ## 11. Out of scope — confirm redirects
 
-Confirm Anatoliy agrees consultant will **not**:
+Confirm Client dev lead agrees consultant will **not**:
 
 - Fix application code or container image bugs  
 - Implement firewall rules or build hub/spoke  
@@ -153,7 +153,7 @@ Confirm Anatoliy agrees consultant will **not**:
 | # | Question |
 |---|----------|
 | 11.1 | Agree on redirects to **app team**, **network team**, **procurement**? |
-| 11.2 | Any item client still expects from Vaco outside list above? |
+| 11.2 | Any item client still expects from Consultant outside list above? |
 
 ---
 
@@ -166,8 +166,8 @@ Confirm Anatoliy agrees consultant will **not**:
 | 1.7 | Golden image **optional** for UAT/prod fleet | Advisory | — | Open |
 | 3.1–3.5 | Prod Linux **greenfield** after UAT | Client | — | **Confirmed** |
 | W2-Q9 | **Podman** (not Docker) on dev | Client | — | **Confirmed** |
-| 6.2 | Linux VM access for Tim | Client | — | **Done** |
-| 6.3 | Azure subscription **Reader** for Tim | Patrick / platform | _[date]_ | **Pending** |
+| 6.2 | Linux VM access for consultant | Client | — | **Done** |
+| 6.3 | Azure subscription **Reader** for consultant | Client platform | _[date]_ | **Pending** |
 | … | | | | |
 
 ---

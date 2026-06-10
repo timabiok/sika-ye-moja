@@ -33,12 +33,12 @@
 |------|----------|-------|
 | T-7d | CAB approval; freeze comms | PM |
 | T-24h | Pre-stage images in prod ACR | Platform |
-| T-1h | Go/no-go call | PM + Kirk + Platform |
+| T-1h | Go/no-go call | PM + Client security + Client platform |
 | T+0 | `terraform apply` prod workload stack | Platform |
 | T+30m | Layer-2 Ansible completes; runner registers | Platform |
 | T+45m | Deploy prod image tag (validated UAT sha) | Platform |
 | T+60m | App smoke tests | App |
-| T+90m | Monitoring green | Patrick |
+| T+90m | Monitoring green | Client platform |
 | T+120m | Sign-off or rollback decision | PM |
 
 ---
@@ -100,7 +100,7 @@ export IMAGE_TAG="<uat-validated-sha>"
 | VM provision failure | `terraform destroy` targeted resources; remain on pre-Linux prod |
 | Deploy failure | Stop quadlet units; keep VMs for debug |
 | App functional failure | Rollback image tag per [PROMOTION-RUNBOOK.md](PROMOTION-RUNBOOK.md) |
-| Security incident | Isolate NSG; invoke break-glass; Kirk |
+| Security incident | Isolate NSG; invoke break-glass; Client security |
 
 **RTO target:** 4 hours to restored state (industry default).
 

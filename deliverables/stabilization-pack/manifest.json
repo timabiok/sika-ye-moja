@@ -3,7 +3,14 @@
   "version": "v0.1",
   "repo": "timabiok/sika-ye-moja",
   "branch": "main",
+  "scope_note": "Draft pack for client review after Workshop 2. Excludes in-progress assessment (DEV-PODMAN-ASSESSMENT), client-filled bridge (NETWORK-TO-TFVARS-BRIDGE), and KT reference docs not yet draft-complete (ARCHITECTURE, BUILD-LAYER, RUNTIME-WORKLOAD-EXAMPLE).",
   "deliverables": [
+    {
+      "section": "Governance",
+      "title": "Charter addendum (aligns SOW to Workshop 2 discovery)",
+      "source": "docs/CHARTER-ADDENDUM.md",
+      "output": "deliverables/stabilization-pack/v0.1/program/charter-addendum.pdf"
+    },
     {
       "section": "Program & Planning",
       "title": "Stabilization strategy and phased plan",
@@ -45,6 +52,12 @@
       "title": "Banking platform standards (access, registry, DR, naming, security gates)",
       "source": "docs/BANKING-PLATFORM-STANDARDS-v1.md",
       "output": "deliverables/stabilization-pack/v0.1/standards/banking-platform-standards.pdf"
+    },
+    {
+      "section": "Platform & Security",
+      "title": "Industry references (CIS, NIST, FFIEC, Azure authority map)",
+      "source": "docs/INDUSTRY-REFERENCES.md",
+      "output": "deliverables/stabilization-pack/v0.1/standards/industry-references.pdf"
     },
     {
       "section": "Platform & Security",
@@ -99,6 +112,12 @@
       "title": "Operations runbook (patching, incidents, disk, rollback)",
       "source": "docs/runbooks/OPERATIONS-RUNBOOK.md",
       "output": "deliverables/stabilization-pack/v0.1/runbooks/operations-runbook.pdf"
+    },
+    {
+      "section": "Development & Operations",
+      "title": "First prod Linux cutover runbook (greenfield)",
+      "source": "docs/runbooks/CUTOVER-RUNBOOK.md",
+      "output": "deliverables/stabilization-pack/v0.1/runbooks/cutover-runbook.pdf"
     },
     {
       "section": "Network",

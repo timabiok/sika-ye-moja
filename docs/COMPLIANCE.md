@@ -62,7 +62,7 @@ Pin `location` and `replication_regions` to US regions approved by your data res
 
 ## Gaps requiring organizational process (not IaC alone)
 
-*The following are **client-owned**; not Vaco SOW deliverables unless separately contracted:*
+*The following are **client-owned**; not Consultant SOW deliverables unless separately contracted:*
 
 - Incident response playbooks for compromised golden image
 - Vulnerability scanning of SIG versions (e.g., Defender for Cloud, Qualys from test VM)

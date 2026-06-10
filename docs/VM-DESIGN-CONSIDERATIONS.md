@@ -199,7 +199,7 @@ module "ingestion_share" {
 
 | Item | Dev issue | Target for UAT/prod |
 |------|-----------|---------------------|
-| **Shared admin** | All developers one account | **Per-user** Linux accounts or **Entra ID SSH** (Patrick/Kirk pilot) |
+| **Shared admin** | All developers one account | **Per-user** Linux accounts or **Entra ID SSH** (Client platform / Client security pilot) |
 | **SSH** | Direct login | **Bastion** or Entra SSH; **no** shared keys |
 | **Sudo** | Uncontrolled | `sudo` via group; logged (auditd) |
 | **Break-glass** | — | Documented; disabled by default |
@@ -343,7 +343,7 @@ Reference: [NETWORK-DISCOVERY-QUESTIONNAIRE.md](NETWORK-DISCOVERY-QUESTIONNAIRE.
 
 | Item | Source | Action |
 |------|--------|--------|
-| **Pen test / Arctic Wolf** | Workshop 2 / Kirk | **P0 closed on dev** before UAT; **re-scan** before prod — see [STANDARDS-RHEL-PODMAN-v0.1.md](STANDARDS-RHEL-PODMAN-v0.1.md) §5 gates |
+| **Pen test / Arctic Wolf** | Workshop 2 / Client security | **P0 closed on dev** before UAT; **re-scan** before prod — see [STANDARDS-RHEL-PODMAN-v0.1.md](STANDARDS-RHEL-PODMAN-v0.1.md) §5 gates |
 | **CIS RHEL 9 L1** | Standards (primary) | OpenSCAP in AIB; verify artifacts |
 | **DISA STIG** | GRC only if mandated | Separate OpenSCAP profile — not default; app compatibility test required |
 | **FIPS** | Discussed | Only if apps approved—**app team** tests |
@@ -384,7 +384,7 @@ Reference: [NETWORK-DISCOVERY-QUESTIONNAIRE.md](NETWORK-DISCOVERY-QUESTIONNAIRE.
 | Item | Consideration |
 |------|----------------|
 | **Azure Monitor** | Banking baseline: Layer 1 golden image installs rsyslog fragment + AMA prereqs; Layer 2 `monitor-baseline` module attaches DCR (syslog + perf) and `AzureMonitorLinuxAgent` to **both** VMs → client Log Analytics / Sentinel |
-| **Logic Monitor** | Patrick—OS, disk, Podman, systemd failed units (separate from Azure Monitor; both may coexist) |
+| **Logic Monitor** | Client platform—OS, disk, Podman, systemd failed units (separate from Azure Monitor; both may coexist) |
 | **Alerts** | Disk full (ingestion), service down, high CPU |
 | **Log forwarding** | Azure Monitor DCR → Log Analytics; SIEM rules client-owned |
 | **Runbooks** | Restart service, disk full, failed deploy rollback |
@@ -463,7 +463,7 @@ Client platform completes before first boot (**both VMs**):
 - [ ] **Runner removed** from legacy combined dev host (or decommission path documented)
 - [ ] Pen test **open P0s** addressed on both roles
 - [ ] Azure Monitor: `log_analytics_workspace_id` in workload tfvars; DCR + AMA on both VMs; egress allow-list for `*.ods.opinsights.azure.com`
-- [ ] Logic Monitor collector enabled (Patrick) if required alongside Azure Monitor
+- [ ] Logic Monitor collector enabled (Client platform) if required alongside Azure Monitor
 - [ ] Monitoring + alerts (runner: queue depth, disk; runtime: services, ingestion disk)
 - [ ] ASR / backup (**runtime** includes data disk; runner often rebuild-from-IaC acceptable)
 - [ ] Runbooks: deploy, rollback, runner disk full, failed job isolation
@@ -472,12 +472,12 @@ Client platform completes before first boot (**both VMs**):
 
 ## 17. Consultant vs client
 
-| Activity | Vaco | Client |
+| Activity | Consultant | Client |
 |----------|------|--------|
 | VM sizing / disk / Podman standards | **Draft** | Approve |
 | Network requirements / allow-list | **Draft** | Implement |
 | Terraform apply | **Out of scope** | Platform |
-| Podman walkthrough + dev assessment | **Lead** | Anatoliy |
+| Podman walkthrough + dev assessment | **Lead** | Client dev lead |
 | Pen test remediation | Advise priority | Security executes |
 | UAT/prod build | Support | Platform |
 
@@ -488,12 +488,12 @@ Client platform completes before first boot (**both VMs**):
 | Input | From |
 |-------|------|
 | Dev **Podman** metrics (CPU/RAM/disk) | Assessment on Linux VM |
-| **build → store → deploy** walkthrough | Anatoliy |
-| **Pen test** summary for Linux | Kirk / security |
-| **Azure Reader** + diagram | Patrick / Anatoliy |
+| **build → store → deploy** walkthrough | Client dev lead |
+| **Pen test** summary for Linux | Client security / security |
+| **Azure Reader** + diagram | Client platform / Client dev lead |
 | **Registry** choice (ACR vs GHCR) | Client |
-| **UAMI + RBAC** assignment model (scope per env) | Patrick / platform |
-| **APIM** in front of VM or direct | Anatoliy — [INGRESS-DECISION-NGINX-SIDECAR.md](INGRESS-DECISION-NGINX-SIDECAR.md) |
+| **UAMI + RBAC** assignment model (scope per env) | Client platform |
+| **APIM** in front of VM or direct | Client dev lead — [INGRESS-DECISION-NGINX-SIDECAR.md](INGRESS-DECISION-NGINX-SIDECAR.md) |
 
 ---
 

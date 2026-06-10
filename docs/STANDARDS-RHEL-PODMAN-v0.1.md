@@ -87,8 +87,8 @@
 |------|------|-------|
 | **Dev** | Remediate **P0** findings from pen test / Arctic Wolf / continuous scan on Linux **before** UAT template or SIG promotion | Client security |
 | **UAT** | No UAT Linux build from golden image while **open P0** on OS hardening, SSH, or shared-admin issues | Client platform |
-| **Prod** | **Re-scan** or security sign-off before first prod Linux cutover | Client security (Kirk) |
-| **Consultant** | Advise prioritization and map findings to this standards doc — **does not** execute pen test or remediate | Vaco |
+| **Prod** | **Re-scan** or security sign-off before first prod Linux cutover | Client security (Client security) |
+| **Consultant** | Advise prioritization and map findings to this standards doc — **does not** execute pen test or remediate | Consultant |
 
 ---
 
@@ -113,12 +113,12 @@
 | Item | Owner | Implementation |
 |------|-------|----------------|
 | **Azure Monitor** | Client platform (SIEM path) | Layer 1: rsyslog + AMA prereqs in golden image (`azure_monitor.yml`). Layer 2: `monitor-baseline` Terraform module — DCR (syslog auth/daemon/kern + perf counters) → Log Analytics, `AzureMonitorLinuxAgent` extension, UAMI `Monitoring Metrics Publisher` on DCR |
-| **Logic Monitor** | Client (Patrick) | Separate from Azure Monitor — layer-2 bootstrap script on image (`enable-logicmonitor-collector.sh`) |
+| **Logic Monitor** | Client platform | Separate from Azure Monitor — layer-2 bootstrap script on image (`enable-logicmonitor-collector.sh`) |
 | **EDR** | Client SOC | Install via approved Ansible when vendor ready |
 | **Pen test / vuln scan** | Client security | Arctic Wolf, annual pen test, or equivalent — see §5 gates; consultant advises priority only |
 | **STIG (if mandated)** | Client GRC + platform | Separate assessment track — not combined with CIS L1 without approval |
 
-**Coexistence:** Azure Monitor feeds the bank Log Analytics / Sentinel path; Logic Monitor remains the Patrick-owned operational dashboard. Both agents may run on the same VM.
+**Coexistence:** Azure Monitor feeds the bank Log Analytics / Sentinel path; Logic Monitor remains the Client platform-owned operational dashboard. Both agents may run on the same VM.
 
 **Layer 1 golden image does not store:** workspace keys, DCR IDs, or AMA association — those are Layer 2 Terraform only.
 

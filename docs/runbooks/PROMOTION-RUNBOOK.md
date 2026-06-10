@@ -116,5 +116,5 @@ sudo journalctl -u gorobi.service -u nginx.service --since "15 min ago" | tail -
 | Role | Contact |
 |------|---------|
 | Platform on-call | _[client]_ |
-| App owner | _[Anatoliy team]_ |
-| Network (egress) | _[Patrick network]_ |
+| App owner | _[App team]_ |
+| Network (egress) | _[Network team]_ |

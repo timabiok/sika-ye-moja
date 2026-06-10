@@ -124,7 +124,7 @@ Full classification: [NETWORK-DISCOVERY-QUESTIONNAIRE.md — When client network
 | Work | Owner | SOW item |
 |------|--------|----------|
 | Request **as-built** diagram + egress path | Client network | Client provides |
-| **Temporary Entra access** for discovery (PIM eligible `Reader`, guest user, MFA) | Client identity / Patrick | Enables portal inventory — [NETWORK-IAM-STANDARDS.md](NETWORK-IAM-STANDARDS.md) |
+| **Temporary Entra access** for discovery (PIM eligible `Reader`, guest user, MFA) | Client identity / Client platform | Enables portal inventory — [NETWORK-IAM-STANDARDS.md](NETWORK-IAM-STANDARDS.md) |
 | Pre-fill [questionnaire](NETWORK-DISCOVERY-QUESTIONNAIRE.md); list blockers | Consultant | 1, 3 |
 | Draft **firewall allow-list** (patch, RHSM, Snowflake, Azure) | Consultant draft | 4 (advisory) |
 | Implement rules / PE / DNS | Client network | **Out of scope** for consultant |
@@ -237,7 +237,7 @@ See [COMPLIANCE.md](COMPLIANCE.md) (informational only; not audit sign-off).
 
 ## Responsibility summary
 
-| Phase | Consultant (Vaco) | Client |
+| Phase | Consultant | Client |
 |-------|-------------------|--------|
 | 0–2 | Assess, standards, risks, reference IaC, review diagrams | Access, fixes, monitoring, deploy IaC |
 | 3–4 | UAT/prod design, runbooks, cutover **support** | Build envs, CI/CD, execute cutover |
@@ -251,12 +251,12 @@ See [COMPLIANCE.md](COMPLIANCE.md) (informational only; not audit sign-off).
 
 | # | Action | Owner |
 |---|--------|--------|
-| 1 | Charter email (post-RHEL uplift scope) | Tim |
+| 1 | Charter email (post-RHEL uplift scope) | Consultant |
 | 2 | Linux box access + architecture diagram | Client |
-| 3 | Dev Podman assessment report (mount, SELinux, DR) | Tim |
-| 4 | RHEL-on-Azure + Podman standards v0.1 | Tim |
-| 5 | UAT design (IaC modules, promotion path) | Tim |
-| 6 | Network Workshop 2 (if external egress critical) | Tim + client network |
+| 3 | Dev Podman assessment report (mount, SELinux, DR) | Consultant |
+| 4 | RHEL-on-Azure + Podman standards v0.1 | Consultant |
+| 5 | UAT design (IaC modules, promotion path) | Consultant |
+| 6 | Network Workshop 2 (if external egress critical) | Consultant + client network |
 
 Track in [CLICKUP-DISCOVERY-TICKETS.md](CLICKUP-DISCOVERY-TICKETS.md).
 

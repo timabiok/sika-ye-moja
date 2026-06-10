@@ -84,7 +84,7 @@ nslookup api.internal.example.com
 | Level | Contact |
 |-------|---------|
 | L1 | Platform on-call |
-| L2 | Network (Patrick team) |
+| L2 | Network (Network team) |
 | L3 | Firewall vendor / Azure support |
 
 **Consultant:** Advisory during cutover window only.

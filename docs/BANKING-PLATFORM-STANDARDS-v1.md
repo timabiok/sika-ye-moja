@@ -183,7 +183,7 @@ Bridge: [NETWORK-TO-TFVARS-BRIDGE.md](NETWORK-TO-TFVARS-BRIDGE.md)
 | **CRITICAL CVE** | CI/CD | Block image push to `prod` ACR repo |
 | **CIS L1** | SIG promotion | OpenSCAP pass with ≤5 documented exceptions |
 | **STIG** | Only if GRC mandates | Separate profile — not stacked with CIS L1 |
-| **Prod cutover** | Go/no-go | Security sign-off (Kirk) + platform + app owner |
+| **Prod cutover** | Go/no-go | Security sign-off (Client security) + platform + app owner |
 
 ---
 

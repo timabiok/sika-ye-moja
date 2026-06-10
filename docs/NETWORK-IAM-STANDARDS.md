@@ -44,7 +44,7 @@ Module: `infra/terraform/modules/nsg-baseline/`
 
 ## Developer temporary CLI access (Track 2 — banking default)
 
-**Developers** (Anatoliy’s team) need `az` on **dev subscription only** — not UAMI, not shared admin, not permanent Contributor.
+**Developers** (Client dev lead’s team) need `az` on **dev subscription only** — not UAMI, not shared admin, not permanent Contributor.
 
 | Step | Standard |
 |------|----------|
@@ -70,7 +70,7 @@ Consultants and network engineers need portal read for discovery. Same PIM patte
 | Identity type | **Individual Entra ID user** per person — consultant as **guest** (`user@consultant.com`) or workforce account |
 | Role model | **Privileged Identity Management (PIM)** — **eligible** assignment, **activate** only when needed |
 | Consultant Azure scope | `Reader` at subscription (dev + prod subs) — **never** `Contributor`, `User Access Administrator`, or Key Vault secret read |
-| Activation | MFA required; max duration **8 hours** (or client policy cap); optional **approval** (Patrick / platform) |
+| Activation | MFA required; max duration **8 hours** (or client policy cap); optional **approval** (Client platform) |
 | Linux / Bastion | Same user identity — **Entra ID SSH** or Bastion with per-user account; no shared `deploy` password in email |
 | Audit | PIM activation logs + Entra sign-in logs retained per GRC policy |
 | Offboarding | **Access review** at engagement end — remove eligible assignments and guest accounts within **5 business days** |
@@ -108,7 +108,7 @@ Client GRC assigns initiative to workload subscriptions.
 
 ## Consultant vs client
 
-| Activity | Vaco | Client |
+| Activity | Consultant | Client |
 |----------|------|--------|
 | NSG/firewall rules draft | Yes | Implements |
 | UAMI + RBAC Terraform | Reference | Applies |

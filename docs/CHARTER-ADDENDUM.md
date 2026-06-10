@@ -1,6 +1,6 @@
 # Charter addendum — engagement alignment
 
-**Parties:** Client PM + Vaco consultant  
+**Parties:** Client PM + Consultant  
 **Purpose:** Align [SOW.md](SOW.md) contract language to confirmed discovery (Workshop 2).  
 **Status:** Draft for client signature.
 
@@ -58,5 +58,5 @@
 | Role | Name | Date |
 |------|------|------|
 | Client PM | | |
-| Client platform (Patrick) | | |
-| Vaco lead | | |
+| Client platform | | |
+| Consultant lead | | |

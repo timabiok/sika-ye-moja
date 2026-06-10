@@ -188,11 +188,11 @@ Use after **service inventory** (NEXT-STEPS 1.2) is complete.
 
 | ID | Deliverable | Owner | Blocks |
 |----|-------------|-------|--------|
-| **ING-5** | **HTTP service inventory** — which services need external ingress vs internal-only (Dagster daemon, batch, etc.) | Anatoliy | Decision |
-| **ING-6** | **Signed ingress choice** (A–E) for dev vs UAT vs prod | Anatoliy / platform | ING-2, Terraform NSG |
-| **ING-7** | Current nginx config export (host paths, `location` blocks, TLS) | Anatoliy | Dev migration plan |
-| **ING-8** | APIM workstream charter (if **C**, **D**, or **E**) — Gorobi pilot route, token policy, subnet | Anatoliy | APIM implementation |
-| **ING-9** | APIM subnet CIDR for firewall + `apim_subnet_prefix` tfvars | Network / Patrick | Runtime NSG lockdown |
+| **ING-5** | **HTTP service inventory** — which services need external ingress vs internal-only (Dagster daemon, batch, etc.) | Client dev lead | Decision |
+| **ING-6** | **Signed ingress choice** (A–E) for dev vs UAT vs prod | Client dev lead / platform | ING-2, Terraform NSG |
+| **ING-7** | Current nginx config export (host paths, `location` blocks, TLS) | Client dev lead | Dev migration plan |
+| **ING-8** | APIM workstream charter (if **C**, **D**, or **E**) — Gorobi pilot route, token policy, subnet | Client dev lead | APIM implementation |
+| **ING-9** | APIM subnet CIDR for firewall + `apim_subnet_prefix` tfvars | Network / Client platform | Runtime NSG lockdown |
 
 ### 8.3 APIM workstream (out of scope unless change order)
 
@@ -222,7 +222,7 @@ Use after **service inventory** (NEXT-STEPS 1.2) is complete.
 | **Chosen option (UAT/prod)** | _[ A / B / C / D / E ]_ |
 | **APIM workstream** | _[ Separate CO / Deferred / N/A ]_ |
 | **Effective date** | _[date]_ |
-| **Approver** | _[Anatoliy / platform]_ |
+| **Approver** | _[Client dev lead / platform]_ |
 
 ---
 

@@ -20,10 +20,10 @@ After KT, client platform can **without consultant**:
 
 | Session | Primary | Optional |
 |---------|---------|----------|
-| KT-1 Architecture | Patrick, Anatoliy | Kirk (security overview) |
-| KT-2 Terraform | Patrick, IaC engineer | — |
-| KT-3 Build + runtime | Anatoliy, dev lead | — |
-| KT-4 Standards review | Patrick, Anatoliy, PM | GRC |
+| KT-1 Architecture | Client platform, Client dev lead | Client security (security overview) |
+| KT-2 Terraform | Client platform, IaC engineer | — |
+| KT-3 Build + runtime | Client dev lead, dev lead | — |
+| KT-4 Standards review | Client platform, Client dev lead, PM | GRC |
 | KT-5 Runbooks | Platform on-call | Network (KT-5b) |
 
 ---
@@ -98,7 +98,7 @@ After KT, client platform can **without consultant**:
 | Role | Name | Date |
 |------|------|------|
 | Client platform | | |
-| Vaco lead | | |
+| Consultant lead | | |
 
 ---
 

@@ -35,7 +35,7 @@ sequenceDiagram
 
 | Step | Action |
 |------|--------|
-| 1 | Patrick adds developer to `grp-platform-developers` (Entra group) |
+| 1 | Client platform adds developer to `grp-platform-developers` (Entra group) |
 | 2 | Platform applies **PIM eligible** roles via `developer-cli-access` Terraform module (**dev only**) |
 | 3 | Developer activates role in **Entra → PIM → My roles** (justify, MFA, ≤8h) |
 | 4 | Developer runs `./scripts/az-developer-login.sh` |
